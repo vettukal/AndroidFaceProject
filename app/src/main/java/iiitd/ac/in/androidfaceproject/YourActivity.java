@@ -1,9 +1,7 @@
 package iiitd.ac.in.androidfaceproject;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
-import com.badoo.mobile.util.WeakHandler;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.viksaa.sssplash.lib.activity.AwesomeSplash;
@@ -65,7 +63,7 @@ public class YourActivity extends AwesomeSplash {
 
         //transit to another activity here
         //or do whatever you want
-
+        /**
         final Activity a = this;
         WeakHandler handler = new WeakHandler();
         handler.postDelayed(new Runnable() {
@@ -74,7 +72,7 @@ public class YourActivity extends AwesomeSplash {
                 ChangeActivityHelper.changeActivity(a, MainActivity.class, true);
             }
         }, Constants.SPLASH_DELAY);
-
+        */
 
         Log.d("vince","Your activity animationFinished");
         Intent intent = new Intent(this,test_sample.class);
