@@ -2,6 +2,7 @@ package iiitd.ac.in.androidfaceproject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Handler;
 import android.util.Log;
 
@@ -23,7 +24,7 @@ public class YourActivity extends AwesomeSplash {
             /* you don't have to override every property */
 
         //Customize Circular Reveal
-        configSplash.setBackgroundColor(getResources().getColor(R.color.primary)); //any color you want form colors.xml
+        configSplash.setBackgroundColor(Color.RED); //any color you want form colors.xml
         configSplash.setAnimCircularRevealDuration(2000); //int ms
         configSplash.setRevealFlagX(Flags.REVEAL_RIGHT);  //or Flags.REVEAL_LEFT
         configSplash.setRevealFlagY(Flags.REVEAL_BOTTOM); //or Flags.REVEAL_TOP

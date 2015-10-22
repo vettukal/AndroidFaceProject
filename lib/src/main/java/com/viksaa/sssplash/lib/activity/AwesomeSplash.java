@@ -130,7 +130,7 @@ abstract public class AwesomeSplash extends AppCompatActivity {
         //left or right
         int x = UIUtil.getRevealDirection(mRlReveal, mConfigSplash.getRevealFlagX());
 
-        mRlReveal.setBackgroundColor(getResources().getColor(R.color.material_grey_900));
+        mRlReveal.setBackgroundColor(mConfigSplash.getBackgroundColor());
         SupportAnimator animator = ViewAnimationUtils.createCircularReveal(mRlReveal, x, y, 0, finalRadius);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.setDuration(mConfigSplash.getAnimCircularRevealDuration());
