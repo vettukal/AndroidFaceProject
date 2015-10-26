@@ -57,8 +57,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign In"
-            android:id="@+id/signin_button"
+            android:text="Sign Out"
+            android:id="@+id/signout_button"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
 

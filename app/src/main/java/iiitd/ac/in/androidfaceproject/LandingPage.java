@@ -1,5 +1,6 @@
 package iiitd.ac.in.androidfaceproject;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -33,8 +34,6 @@ public class LandingPage extends ActionBarActivity {
         setContentView(R.layout.activity_landing_page);
 
 
-
-
         ImageButton mcamera;
         mcamera = (ImageButton) findViewById(R.id.imageButtonCamera);
         mcamera.setOnClickListener(new View.OnClickListener() {
@@ -54,12 +53,12 @@ public class LandingPage extends ActionBarActivity {
                 //Date today = Calendar.getInstance().getTime();
 // Using DateFormat format method we can create a string
 // representation of a date with the defined format.
-                String reportDate = time+"";
+                String reportDate = time + "";
 
                 destination = new File(Environment
                         .getExternalStorageDirectory(), reportDate + ".jpg");
-                Log.d("vincent","destination: "+destination.toString());
-                Log.d("vincent","destination: "+destination.getAbsolutePath());
+                Log.d("vincent", "destination: " + destination.toString());
+                Log.d("vincent", "destination: " + destination.getAbsolutePath());
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT,
@@ -80,6 +79,18 @@ public class LandingPage extends ActionBarActivity {
                         android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 final int ACTIVITY_SELECT_IMAGE = 1234;
                 startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
+            }
+        });
+
+        ImageButton mCollage = (ImageButton) findViewById(R.id.imageButtonCollage);
+        final Activity a = this;
+        mCollage.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(a, Collage.class);
+                startActivity(intent);
+
             }
         });
 

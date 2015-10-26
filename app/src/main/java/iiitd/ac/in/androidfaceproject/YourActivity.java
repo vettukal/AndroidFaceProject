@@ -73,7 +73,7 @@ public class YourActivity extends AwesomeSplash {
             @Override
             public void run() {
                 Log.d("vince","Your activity animationFinished inside the run after 5000");
-                Intent intent = new Intent(a,LandingPage.class);
+                Intent intent = new Intent(a,GoogleSignIn.class);
                 startActivity(intent);
 
             }
