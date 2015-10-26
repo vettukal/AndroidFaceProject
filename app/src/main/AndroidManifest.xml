@@ -24,6 +24,17 @@
             android:name=".YourActivity"
             android:label="Your Activity" >
         </activity>
-    </application>
+        <activity
+            android:name=".LandingPage"
+            android:label="@string/title_activity_landing_page" >
+        </activity>
+        <activity
+            android:name=".PhotoEditor"
+            android:label="@string/title_activity_photo_editor" >
 
+        </activity>
+
+
+    </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>

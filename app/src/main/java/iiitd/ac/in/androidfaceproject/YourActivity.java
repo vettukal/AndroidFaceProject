@@ -73,14 +73,12 @@ public class YourActivity extends AwesomeSplash {
             @Override
             public void run() {
                 Log.d("vince","Your activity animationFinished inside the run after 5000");
-                Intent intent = new Intent(a,test_sample.class);
+                Intent intent = new Intent(a,LandingPage.class);
                 startActivity(intent);
 
             }
         },7000);
 
         Log.d("vince","Your activity animationFinished finished");
-
-
     }
 }
