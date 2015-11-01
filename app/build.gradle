@@ -10,7 +10,7 @@ android {
     buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "iiitd.ac.in.androidfaceproject"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
