@@ -31,6 +31,9 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
     private boolean mIsResolving = false;
     private boolean mShouldResolve = false;
 
+    Bitmap bmp;
+    ImageView iv_background;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -42,16 +45,8 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in);
 
-        /* adapt the image to the size of the display */
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        Bitmap bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
-                getResources(), R.drawable.bg),size.x,size.y,true);
 
-        /* fill the background ImageView with the resized image */
-        ImageView iv_background = (ImageView) findViewById(R.id.bg_google_signin);
-        iv_background.setImageBitmap(bmp);
+        loadBG();
 
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -65,6 +60,27 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
                 .addScope(new Scope(Scopes.PROFILE))
                 .addScope(new Scope(Scopes.EMAIL))
                 .build();
+    }
+
+    private void loadBG() {
+        /* adapt the image to the size of the display */
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+                getResources(), R.drawable.bg),size.x,size.y,true);
+
+        /* fill the background ImageView with the resized image */
+        iv_background = (ImageView) findViewById(R.id.bg_google_signin);
+        iv_background.setImageBitmap(bmp);
+    }
+
+    private void unloadBG(){
+        if(iv_background!=null)
+            iv_background.setImageBitmap(null);
+
+        if(bmp!=null)
+            bmp = null;
     }
 
     @Override
@@ -146,6 +162,7 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         super.onStop();
+        unloadBG();
         if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             mGoogleApiClient.disconnect();
@@ -155,6 +172,7 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
+        loadBG();
         mGoogleApiClient.connect();
     }
 
