@@ -52,8 +52,15 @@
             android:layout_above="@+id/effects_holder"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+
             />
 
+        <include layout="@layout/holder_level_filter"
+            android:layout_above="@+id/effects_holder"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+
+            />
 
         <include layout="@layout/holder_filters" />
 

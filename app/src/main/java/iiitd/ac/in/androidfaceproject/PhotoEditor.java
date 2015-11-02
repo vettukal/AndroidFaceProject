@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -175,5 +176,45 @@ public class PhotoEditor extends AppCompatActivity {
     public void onClickEffectButton(View view){
         Log.d("vince "+this.getLocalClassName(),"Button at bottom is clicked.");
         Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
+
+        handleLevel1(view.getTag().toString());
+    }
+
+    public void onClickFilterEffectButton(View view){
+        Log.d("vince "+this.getLocalClassName(),"Button at Filter Ribbon is clicked.");
+        Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
+
+        //handleLevel1(view.getTag().toString());
+    }
+
+    private void handleLevel1(String tag) {
+
+        // TODO: check whether the tag is valid or not.
+        // doing the dirty way of just applying the effect without checking
+
+        if(tag.equals("Adjustments")){
+            LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder2);
+            if(adjustPop.getVisibility()==View.VISIBLE){
+                adjustPop.setVisibility(View.GONE);
+            }
+            else {
+                adjustPop.setVisibility(View.VISIBLE);
+            }
+
+        }
+
+        else if(tag.equals("Filters")){
+            LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder3);
+            if(adjustPop==null){
+                Log.d("vince "+this.getLocalClassName()," adjustPop is null");
+                return;
+            }
+            if(adjustPop.getVisibility()==View.VISIBLE){
+                adjustPop.setVisibility(View.GONE);
+            }
+            else {
+                adjustPop.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

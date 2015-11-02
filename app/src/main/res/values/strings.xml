@@ -33,4 +33,10 @@
     <string name="effect21">Age Gender</string>
     <string name="effect22">Adjustments</string>
     <string name="effect23">Filters</string>
+    <string name="effect24">Saturation</string>
+    <string name="effect_adj_1">Crop</string>
+    <string name="effect_adj_2">AutoFix</string>
+    <string name="effect_adj_3">Brightness</string>
+    <string name="effect_adj_4">Color</string>
+    <string name="effect_adj_5">Contrast</string>
 </resources>
