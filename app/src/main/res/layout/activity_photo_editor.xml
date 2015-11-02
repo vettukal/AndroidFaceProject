@@ -7,7 +7,9 @@
         <ImageView
             android:id="@+id/imgView"
             android:layout_width="match_parent"
-            android:layout_height="525dp" />
+            android:layout_height="525dp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/hsv_filters" />
 
 
     <HorizontalScrollView
@@ -24,7 +26,7 @@
         android:layout_alignParentBottom="true">
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
             android:orientation="horizontal"
@@ -42,14 +44,136 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Adjustments"
+            android:onClick="onClickAdjstmentBtn"
             android:id="@+id/adjustment_button" />\
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="onClickFilterBtn"
             android:text="Filters"
             android:id="@+id/filter_button" />
         </LinearLayout>
+    </HorizontalScrollView>
+
+
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/hsv_adjustments"
+        android:scrollbars="none"
+        android:visibility="gone"
+        android:layout_above="@+id/horizontalScrollView"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true">
+
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent">
+
+
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crop"
+                android:id="@+id/crop_button"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Autofix"
+                android:id="@+id/autofix_button"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="false"
+                android:layout_alignParentEnd="false"
+                android:layout_toEndOf="@id/crop_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Brightness"
+                android:id="@+id/brightness_button"
+                android:layout_toEndOf="@id/autofix_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Contrast"
+                android:id="@+id/contrast_button"
+                android:layout_alignParentEnd="false"
+                android:layout_toEndOf="@id/brightness_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Color"
+                android:id="@+id/color_button"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@id/contrast_button" />
+        </RelativeLayout>
+    </HorizontalScrollView>
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:id="@+id/hsv_filters"
+        android:layout_above="@+id/horizontalScrollView"
+        android:visibility="gone"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sepia"
+                android:id="@+id/sepia_button"
+                android:layout_alignParentStart="true" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monochrome"
+                android:id="@+id/monochrome_button"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/sepia_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HDR"
+                android:id="@+id/hdr_button"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_toEndOf="@id/monochrome_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monocolor"
+                android:id="@+id/monocolor_button"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/hdr_button" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inverse"
+                android:id="@+id/inverse_button"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentStart="false"
+                android:layout_toEndOf="@id/monocolor_button" />
+        </RelativeLayout>
     </HorizontalScrollView>
 
 

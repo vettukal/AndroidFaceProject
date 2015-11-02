@@ -8,8 +8,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -17,6 +19,13 @@ import java.io.File;
 
 
 public class PhotoEditor extends AppCompatActivity {
+
+
+    boolean lvlOneScrollView = false;
+    boolean lvltwoScrollView = false;
+    HorizontalScrollView [] scrollViewsLvlOne;
+    HorizontalScrollView [] scrollViewsLvlTwo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +54,10 @@ public class PhotoEditor extends AppCompatActivity {
                 .getExternalStorageDirectory(), "1445871154448" + ".jpg");
         //imageFile = destination;
 
+
+        scrollViewsLvlOne = new HorizontalScrollView [] {(HorizontalScrollView) findViewById(R.id.hsv_filters),
+                (HorizontalScrollView) findViewById(R.id.hsv_adjustments)};
+
         if(imageFile.exists()){
             Log.d("vincent","image file exists");
 
@@ -69,6 +82,57 @@ public class PhotoEditor extends AppCompatActivity {
             Log.d("vincent","image file not NOT exists");
         }
     }
+
+    public void onClickAdjstmentBtn(View v)
+    {
+        HorizontalScrollView hsvAdjustments = (HorizontalScrollView) findViewById(R.id.hsv_adjustments);
+        if(hsvAdjustments.getVisibility() == View.VISIBLE)
+            hsvAdjustments.setVisibility(View.GONE);
+        else if(lvlOneScrollView) {
+            turnOffScrollView(1);
+            hsvAdjustments.setVisibility(View.VISIBLE);
+            lvlOneScrollView = true;
+            }
+        else{
+            hsvAdjustments.setVisibility(View.VISIBLE);
+            lvlOneScrollView = true;
+        }
+
+
+
+//        Toast.makeText(this, "Clicked on Adjustment Button", Toast.LENGTH_LONG).show();
+    }
+
+
+    public void onClickFilterBtn(View v)
+    {
+        HorizontalScrollView hsvFilters = (HorizontalScrollView) findViewById(R.id.hsv_filters);
+        if(hsvFilters.getVisibility() == View.VISIBLE)
+            hsvFilters.setVisibility(View.GONE);
+        else if(lvlOneScrollView) {
+            turnOffScrollView(1);
+            hsvFilters.setVisibility(View.VISIBLE);
+            lvlOneScrollView = true;
+        }
+        else{
+            hsvFilters.setVisibility(View.VISIBLE);
+            lvlOneScrollView = true;
+        }
+        //Toast.makeText(this, "Clicked on filter Button", Toast.LENGTH_LONG).show();
+    }
+
+
+    private void turnOffScrollView(int i) {
+        if(i==1)
+        {
+            for(HorizontalScrollView temp : scrollViewsLvlOne)
+                temp.setVisibility(View.GONE);
+            lvlOneScrollView = false;
+        }
+
+
+    }
+
 
 
     @Override
