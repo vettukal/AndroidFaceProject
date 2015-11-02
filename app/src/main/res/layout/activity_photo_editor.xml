@@ -21,8 +21,9 @@
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" >
-        <!--
         <include layout="@layout/holder_save" />
+        <!--
+
 
         <include layout="@layout/holder_apply_filter" />
 
@@ -47,7 +48,15 @@
         <include layout="@layout/holder_tint" />
         -->
 
+        <include layout="@layout/holder_level2"
+            android:layout_above="@+id/effects_holder"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            />
+
+
         <include layout="@layout/holder_filters" />
+
     </RelativeLayout>
 
 </RelativeLayout>

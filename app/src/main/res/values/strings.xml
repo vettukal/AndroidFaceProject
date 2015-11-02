@@ -29,4 +29,8 @@
     <string name="effect17">Vignette</string>
     <string name="effect18">Saturation</string>
     <string name="effect19">Contrast</string>
+
+    <string name="effect21">Age Gender</string>
+    <string name="effect22">Adjustments</string>
+    <string name="effect23">Filters</string>
 </resources>
