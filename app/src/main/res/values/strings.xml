@@ -8,4 +8,25 @@
     <string name="title_activity_photo_editor">PhotoEditor</string>
     <string name="title_activity_collage">Collage</string>
     <string name="title_activity_application">Application</string>
+    <string name="img_desc">Some image from filter holder</string>
+
+    <string name="effect1">Brightness</string>
+    <string name="effect2">Flip</string>
+    <string name="effect3">Hue</string>
+    <string name="effect4">Tint</string>
+    <string name="effect5">Gamma</string>
+    <string name="effect6">Invert</string>
+    <string name="effect7">Grayscale</string>
+    <string name="effect8">Sepia</string>
+    <string name="effect9">Sharpen</string>
+    <string name="effect10">Gau. Blur</string>
+    <string name="effect11">C. Filter</string>
+    <string name="effect12">C. Depth</string>
+    <string name="effect13">Emboss</string>
+    <string name="effect14">Boost</string>
+    <string name="effect15">Noise</string>
+    <string name="effect16">Sketch</string>
+    <string name="effect17">Vignette</string>
+    <string name="effect18">Saturation</string>
+    <string name="effect19">Contrast</string>
 </resources>

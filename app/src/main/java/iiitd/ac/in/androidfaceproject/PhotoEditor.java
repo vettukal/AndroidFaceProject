@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -26,6 +27,9 @@ public class PhotoEditor extends AppCompatActivity {
     HorizontalScrollView [] scrollViewsLvlOne;
     HorizontalScrollView [] scrollViewsLvlTwo;
 
+    private RelativeLayout toolbox;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,7 @@ public class PhotoEditor extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_editor);
 
-
+        toolbox = (RelativeLayout) findViewById(R.id.toolbox);
         ImageView tv1;
         //tv1.setImageResource(R.id.imageButtonCamera);
         tv1= (ImageView) findViewById(R.id.imgView);
@@ -54,10 +58,10 @@ public class PhotoEditor extends AppCompatActivity {
                 .getExternalStorageDirectory(), "1445871154448" + ".jpg");
         //imageFile = destination;
 
-
+        /**
         scrollViewsLvlOne = new HorizontalScrollView [] {(HorizontalScrollView) findViewById(R.id.hsv_filters),
                 (HorizontalScrollView) findViewById(R.id.hsv_adjustments)};
-
+        */
         if(imageFile.exists()){
             Log.d("vincent","image file exists");
 
@@ -83,6 +87,7 @@ public class PhotoEditor extends AppCompatActivity {
         }
     }
 
+    /**
     public void onClickAdjstmentBtn(View v)
     {
         HorizontalScrollView hsvAdjustments = (HorizontalScrollView) findViewById(R.id.hsv_adjustments);
@@ -134,7 +139,7 @@ public class PhotoEditor extends AppCompatActivity {
     }
 
 
-
+    */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -155,5 +160,20 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void toggleToolbox(View v){
+        Log.d("vince "+this.getLocalClassName()," image clicked and inside the toggleToolBox");
+
+        if (toolbox.getVisibility() == View.VISIBLE) {
+            toolbox.setVisibility(View.GONE);
+        } else {
+            toolbox.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onClickEffectButton(View view){
+        Log.d("vince "+this.getLocalClassName(),"Button at bottom is clicked.");
+        Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
     }
 }
