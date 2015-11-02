@@ -2,17 +2,14 @@ package iiitd.ac.in.androidfaceproject;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,8 +28,16 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
     private boolean mIsResolving = false;
     private boolean mShouldResolve = false;
 
-    Bitmap bmp;
-    ImageView iv_background;
+    //Bitmap bmp;
+    //ImageView iv_background;
+
+    private ImageView img; // The second image
+    private MyApp app;
+    private int navid; //= R.id.imageView1; // id of the imageView
+    private int navdid ;//= R.drawable.secondimage; // id of the image drawable
+    private int bgid = R.drawable.bg; // id of the background drawable
+    private int layoutid = R.id.layout_google_sign_in; // id of the activity layout
+    private RelativeLayout layout; // the layout of the activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,9 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         setContentView(R.layout.activity_google_sign_in);
 
 
-        loadBG();
+        app = (MyApp)getApplication();
+        layout = (RelativeLayout) findViewById(layoutid);
+        app.setBackground(layout, bgid);
 
 
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -61,20 +68,22 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
                 .addScope(new Scope(Scopes.EMAIL))
                 .build();
     }
-
+    /**
     private void loadBG() {
-        /* adapt the image to the size of the display */
+        // adapt the image to the size of the display
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
                 getResources(), R.drawable.bg),size.x,size.y,true);
 
-        /* fill the background ImageView with the resized image */
+        // fill the background ImageView with the resized image
         iv_background = (ImageView) findViewById(R.id.bg_google_signin);
         iv_background.setImageBitmap(bmp);
     }
+    */
 
+    /**
     private void unloadBG(){
         if(iv_background!=null)
             iv_background.setImageBitmap(null);
@@ -83,6 +92,7 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
             bmp = null;
     }
 
+    */
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.sign_in_button) {
@@ -162,7 +172,8 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onStop() {
         super.onStop();
-        unloadBG();
+        Log.d("vince GoogleSignIn"," ON stop() called. Now unloading.");
+        //unloadBG();
         if (mGoogleApiClient.isConnected()) {
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             mGoogleApiClient.disconnect();
@@ -172,7 +183,8 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onResume() {
         super.onResume();
-        loadBG();
+        layout = (RelativeLayout) findViewById(layoutid);
+        app.setBackground(layout, bgid);
         mGoogleApiClient.connect();
     }
 

@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import java.io.File;
 
@@ -33,8 +31,16 @@ public class LandingPage extends AppCompatActivity {
     private static final int SELECT_FILE1 = 1;
     public static Bitmap bmpScale;
     public static String imagePath;
-    Bitmap bmp;
-    ImageView iv_background;
+    //Bitmap bmp;
+    //ImageView iv_background;
+
+    private ImageView img; // The second image
+    private MyApp app;
+    private int navid; //= R.id.imageView1; // id of the imageView
+    private int navdid ;//= R.drawable.secondimage; // id of the image drawable
+    private int bgid = R.drawable.bg2; // id of the background drawable
+    private int layoutid = R.id.layout_landing_page; // id of the activity layout
+    private RelativeLayout layout; // the layout of the activity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +50,10 @@ public class LandingPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_page);
 
-        loadBG();
+        app = (MyApp)getApplication();
+        layout = (RelativeLayout) findViewById(layoutid);
+        app.setBackground(layout, bgid);
+
         ImageButton mcamera;
         mcamera = (ImageButton) findViewById(R.id.imageButtonCamera);
         mcamera.setOnClickListener(new View.OnClickListener() {
@@ -130,37 +139,22 @@ public class LandingPage extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadBG() {
-        /* adapt the image to the size of the display */
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
-                getResources(), R.drawable.bg2), size.x, size.y, true);
 
-        /* fill the background ImageView with the resized image */
-        iv_background = (ImageView) findViewById(R.id.bg_landing_page);
-        iv_background.setImageBitmap(bmp);
-    }
 
-    private void unloadBG() {
-        if (iv_background != null)
-            iv_background.setImageBitmap(null);
 
-        if (bmp != null)
-            bmp = null;
-    }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unloadBG();
+
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        loadBG();
+        layout = (RelativeLayout) findViewById(layoutid);
+        app.setBackground(layout, bgid);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

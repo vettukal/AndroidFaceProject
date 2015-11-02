@@ -2,12 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
+    android:id="@+id/layout_landing_page"
     android:layout_height="fill_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/bg_landing_page" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
@@ -25,6 +22,7 @@
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:background="@null"
+
             android:clickable="true"
             android:scaleType="fitCenter"
             android:layout_below="@+id/linearLayout"
@@ -35,6 +33,7 @@
             android:id="@+id/imageButtonGallery"
             android:layout_width="133dp"
             android:layout_height="133dp"
+
             android:background="@null"
             android:clickable="true"
             android:scaleType="fitCenter"
@@ -47,6 +46,7 @@
             android:id="@+id/imageButtonCollage"
             android:layout_width="131dp"
             android:layout_height="131dp"
+
             android:background="@null"
             android:clickable="true"
             android:scaleType="fitCenter"
