@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:weightSum="1">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -14,60 +11,58 @@
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:id="@+id/linearLayout2">
 
         <ImageView
             android:id="@+id/imgView"
-            android:layout_width="257dp"
-            android:layout_height="385dp" />
+            android:layout_width="match_parent"
+            android:layout_height="525dp" />
 
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+    <HorizontalScrollView
+        android:layout_width="682dp"
         android:layout_height="match_parent"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:weightSum="1">
+        android:id="@+id/horizontalScrollView"
+        android:scrollbars="none"
+        android:visibility="visible"
+        android:scrollIndicators="start|end"
+        android:foregroundGravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_alignParentStart="false">
 
-
-        <HorizontalScrollView
-            android:layout_width="682dp"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/horizontalScrollView" >
-
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom"
-                android:orientation="horizontal"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:weightSum="1">
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Age/Gender"
-                android:id="@+id/age_button" />
+            android:layout_gravity="bottom"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:weightSum="1">
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Adjustments"
-                android:id="@+id/adjustment_button" />\
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Age/Gender"
+            android:id="@+id/age_button" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Filters"
-                android:id="@+id/filter_button" />
-            </LinearLayout>
-        </HorizontalScrollView>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adjustments"
+            android:id="@+id/adjustment_button" />\
 
-    </LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Filters"
+            android:id="@+id/filter_button" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
 
-
-</LinearLayout>
+</RelativeLayout>
