@@ -187,12 +187,22 @@ public class PhotoEditor extends AppCompatActivity {
         //handleLevel1(view.getTag().toString());
     }
 
+
+    public void onClickAdjButton(View view){
+        Log.d("vince "+this.getLocalClassName(),"Button at Adjustment Ribbon is clicked.");
+        Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
+
+        //handleLevel1(view.getTag().toString());
+    }
+
+
     private void handleLevel1(String tag) {
 
         // TODO: check whether the tag is valid or not.
         // doing the dirty way of just applying the effect without checking
 
         if(tag.equals("Adjustments")){
+            //TODO: Take every ribbon other than adjustments and make invisible
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder2);
             if(adjustPop.getVisibility()==View.VISIBLE){
                 adjustPop.setVisibility(View.GONE);
@@ -204,6 +214,7 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
         else if(tag.equals("Filters")){
+            //TODO: Take every ribbon other than filter and make invisible
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder3);
             if(adjustPop==null){
                 Log.d("vince "+this.getLocalClassName()," adjustPop is null");
