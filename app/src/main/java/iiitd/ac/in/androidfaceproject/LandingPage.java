@@ -4,21 +4,27 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.io.File;
 
 
-public class LandingPage extends ActionBarActivity {
+public class LandingPage extends AppCompatActivity {
 
     File destination;
     Uri selectedImage;
@@ -27,13 +33,18 @@ public class LandingPage extends ActionBarActivity {
     private static final int SELECT_FILE1 = 1;
     public static Bitmap bmpScale;
     public static String imagePath;
+    Bitmap bmp;
+    ImageView iv_background;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing_page);
 
-
+        loadBG();
         ImageButton mcamera;
         mcamera = (ImageButton) findViewById(R.id.imageButtonCamera);
         mcamera.setOnClickListener(new View.OnClickListener() {
@@ -119,15 +130,45 @@ public class LandingPage extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void loadBG() {
+        /* adapt the image to the size of the display */
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        bmp = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(
+                getResources(), R.drawable.bg2), size.x, size.y, true);
 
+        /* fill the background ImageView with the resized image */
+        iv_background = (ImageView) findViewById(R.id.bg_landing_page);
+        iv_background.setImageBitmap(bmp);
+    }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    private void unloadBG() {
+        if (iv_background != null)
+            iv_background.setImageBitmap(null);
+
+        if (bmp != null)
+            bmp = null;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unloadBG();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadBG();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch(requestCode) {
+        switch (requestCode) {
             case 1234:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Uri selectedImage = data.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -139,8 +180,8 @@ public class LandingPage extends ActionBarActivity {
                     cursor.close();
 
 
-                    Intent intent = new Intent(this,PhotoEditor.class);
-                    intent.putExtra("filename",filePath);
+                    Intent intent = new Intent(this, PhotoEditor.class);
+                    intent.putExtra("filename", filePath);
                     startActivity(intent);
                     //Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
             /* Now you have choosen image in Bitmap format in object "yourSelectedImage". You can use it in way you want! */

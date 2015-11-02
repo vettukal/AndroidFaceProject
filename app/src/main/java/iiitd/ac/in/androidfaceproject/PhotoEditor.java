@@ -4,20 +4,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
 
 
-public class PhotoEditor extends ActionBarActivity {
+public class PhotoEditor extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_editor);
 
@@ -32,7 +37,7 @@ public class PhotoEditor extends ActionBarActivity {
         Log.d("vincent",filePath);
         //Bitmap bitmap1 = BitmapFactory.decodeStream(si1);
         //tv1.setImageBitmap(yourSelectedImage);
-        tv1.setImageResource(R.drawable.galleryjpg);
+        tv1.setImageResource(R.drawable.gallerypng);
 
         File imageFile = new  File(filePath);
 
