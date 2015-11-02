@@ -1,65 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:weightSum="1">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-
-
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bg_landing_page" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:orientation="vertical"
+        android:weightSum="1"
+        android:baselineAligned="false"
+        android:clickable="true"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="90dp"
+        android:id="@+id/linearLayout">
 
         <ImageButton
             android:id="@+id/imageButtonCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="@null"
             android:src="@drawable/camerapng"
-            android:layout_gravity="center_vertical" />
+            android:clickable="true"
+            android:scaleType="fitCenter"
+            android:layout_below="@+id/linearLayout"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center" />
 
         <ImageButton
             android:id="@+id/imageButtonGallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/galleryjpg"
-            android:layout_gravity="center_vertical" />
+            android:layout_width="133dp"
+            android:layout_height="133dp"
+            android:src="@drawable/gallerypng"
+            android:background="@null"
+            android:clickable="true"
+            android:scaleType="fitCenter"
+            android:layout_below="@+id/imageButtonCamera"
+            android:layout_alignEnd="@+id/imageButtonCamera"
+            android:paddingTop="35dp"
+            android:layout_gravity="top|center" />
 
         <ImageButton
-        android:id="@+id/imageButtonCollage"
-        android:layout_width="48dp"
-        android:layout_height="match_parent"
-        android:src="@drawable/collagepng"
-        android:layout_weight="0.10" />
-
-        </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="357dp"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:layout_gravity="bottom|center"
-        android:orientation="vertical"
-        android:weightSum="1"
-        android:layout_weight="8.25">
-
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sign Out"
-            android:id="@+id/signout_button"
-            android:layout_gravity="center_horizontal" />
-    </LinearLayout>
+            android:id="@+id/imageButtonCollage"
+            android:layout_width="131dp"
+            android:layout_height="131dp"
+            android:src="@drawable/collagepng"
+            android:background="@null"
+            android:clickable="true"
+            android:scaleType="fitCenter"
+            android:layout_below="@+id/imageButtonGallery"
+            android:layout_alignEnd="@+id/imageButtonGallery"
+            android:paddingTop="50dp"
+            android:layout_gravity="center" />
 
     </LinearLayout>
+
+
+</RelativeLayout>
