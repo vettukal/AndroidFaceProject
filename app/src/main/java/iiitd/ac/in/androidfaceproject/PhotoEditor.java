@@ -1,7 +1,12 @@
 package iiitd.ac.in.androidfaceproject;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +22,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.microsoft.projectoxford.face.FaceServiceClient;
+import com.microsoft.projectoxford.face.contract.Face;
+import com.microsoft.projectoxford.face.contract.FaceRectangle;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.HashMap;
 
 
@@ -30,6 +42,91 @@ public class PhotoEditor extends AppCompatActivity {
     HorizontalScrollView [] scrollViewsLvlTwo;
 
     private RelativeLayout toolbox;
+
+    private final int PICK_IMAGE = 1;
+    private ProgressDialog detectionProgressDialog;
+
+    private FaceServiceClient faceServiceClient =
+            new FaceServiceClient("f6a16646879b4f0aa33c208521225faa");
+
+    Bitmap logbitmap;
+
+    // Detect faces by uploading face images
+// Frame faces after detection
+
+    private static Bitmap drawFaceRectanglesOnBitmap(Bitmap originalBitmap, Face[] faces) {
+        Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setColor(Color.RED);
+        int stokeWidth = 2;
+        paint.setStrokeWidth(stokeWidth);
+        if (faces != null) {
+            for (Face face : faces) {
+                FaceRectangle faceRectangle = face.faceRectangle;
+                canvas.drawRect(
+                        faceRectangle.left,
+                        faceRectangle.top,
+                        faceRectangle.left + faceRectangle.width,
+                        faceRectangle.top + faceRectangle.height,
+                        paint);
+            }
+        }
+        return bitmap;
+    }
+
+
+    private void detectAndFrame(final Bitmap imageBitmap)
+    {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        AsyncTask<InputStream, String, Face[]> detectTask =
+                new AsyncTask<InputStream, String, Face[]>() {
+                    @Override
+                    protected Face[] doInBackground(InputStream... params) {
+                        try {
+                            publishProgress("Detecting...");
+                            Face[] result = faceServiceClient.detect(
+                                    params[0], false, false, false, false);
+                            if (result == null)
+                            {
+                                publishProgress("Detection Finished. Nothing detected");
+                                return null;
+                            }
+                            publishProgress(
+                                    String.format("Detection Finished. %d face(s) detected",
+                                            result.length));
+                            return result;
+                        } catch (Exception e) {
+                            publishProgress("Detection failed");
+                            return null;
+                        }
+                    }
+                    @Override
+                    protected void onPreExecute() {
+                        detectionProgressDialog.show();
+
+                    }
+                    @Override
+                    protected void onProgressUpdate(String... progress) {
+                        detectionProgressDialog.setMessage(progress[0]);
+
+                    }
+                    @Override
+                    protected void onPostExecute(Face[] result) {
+                        detectionProgressDialog.dismiss();
+                        if (result == null) return;
+                        ImageView imageView = (ImageView)findViewById(R.id.imgView);
+                        imageView.setImageBitmap(drawFaceRectanglesOnBitmap(imageBitmap, result));
+                        imageBitmap.recycle();
+
+                    }
+                };
+        detectTask.execute(inputStream);
+    }
 
 
 
@@ -72,7 +169,7 @@ public class PhotoEditor extends AppCompatActivity {
             Log.d("vincent",imageFile.getAbsolutePath());
             imageView.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
 
-            Bitmap logbitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+            logbitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
             //Log.d("vincent",logbitmap.toString());
             if(logbitmap == null){
                 Log.d("vincent","bitmap is null");
@@ -87,6 +184,7 @@ public class PhotoEditor extends AppCompatActivity {
         else {
             Log.d("vincent","image file not NOT exists");
         }
+        detectionProgressDialog = new ProgressDialog(this);
     }
 
     /**
@@ -229,6 +327,12 @@ public class PhotoEditor extends AppCompatActivity {
             else {
                 adjustPop.setVisibility(View.VISIBLE);
             }
+        }
+
+        else if(tag.equals("AgeGender")){
+            Log.d("vince"," Going to detect the age and gender");
+            detectAndFrame(logbitmap);
+
         }
     }
 
