@@ -26,6 +26,7 @@ import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.contract.Face;
 import com.microsoft.projectoxford.face.contract.FaceAttribute;
 import com.microsoft.projectoxford.face.contract.FaceRectangle;
+import com.microsoft.projectoxford.face.contract.GenderEnum;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -62,7 +63,7 @@ public class PhotoEditor extends AppCompatActivity {
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.RED);
-        int stokeWidth = 4;
+        int stokeWidth = 8;
         paint.setStrokeWidth(stokeWidth);
         Paint paintText = new Paint();
         //paintText.setAntiAlias(true);
@@ -83,7 +84,14 @@ public class PhotoEditor extends AppCompatActivity {
 
                 Log.d("vince PhotoEditor", "Gender of the face: "+attribute.gender);
                 Log.d("vince PhotoEditor", "Age of the face: "+attribute.age);
-                canvas.drawText(""+attribute.age,faceRectangle.left+(faceRectangle.width/4),faceRectangle.top + 60,paintText);
+                String dGender= "";
+                if(attribute.gender == GenderEnum.female){
+                    dGender = "F";
+                }
+                else {
+                    dGender = "M";
+                }
+                canvas.drawText(""+(int)attribute.age+"/"+dGender,faceRectangle.left+(faceRectangle.width/4),faceRectangle.top - 25,paintText);
 
             }
         }
