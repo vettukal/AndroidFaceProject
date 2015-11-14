@@ -108,7 +108,7 @@ public class LandingPage extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(a, Collage.class);
+                Intent intent = new Intent(a,CollageMainActivity.class);
                 startActivity(intent);
 
             }
