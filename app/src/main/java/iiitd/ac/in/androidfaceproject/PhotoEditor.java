@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.contract.Face;
+import com.microsoft.projectoxford.face.contract.FaceAttribute;
 import com.microsoft.projectoxford.face.contract.FaceRectangle;
 
 import java.io.ByteArrayInputStream;
@@ -61,8 +62,13 @@ public class PhotoEditor extends AppCompatActivity {
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.RED);
-        int stokeWidth = 2;
+        int stokeWidth = 4;
         paint.setStrokeWidth(stokeWidth);
+        Paint paintText = new Paint();
+        //paintText.setAntiAlias(true);
+        //paintText.setStyle(Paint.Style.STROKE);
+        paintText.setColor(Color.YELLOW);
+        paintText.setTextSize(80);
         if (faces != null) {
             for (Face face : faces) {
                 FaceRectangle faceRectangle = face.faceRectangle;
@@ -72,6 +78,13 @@ public class PhotoEditor extends AppCompatActivity {
                         faceRectangle.left + faceRectangle.width,
                         faceRectangle.top + faceRectangle.height,
                         paint);
+
+                FaceAttribute attribute = face.attributes;
+
+                Log.d("vince PhotoEditor", "Gender of the face: "+attribute.gender);
+                Log.d("vince PhotoEditor", "Age of the face: "+attribute.age);
+                canvas.drawText(""+attribute.age,faceRectangle.left+(faceRectangle.width/4),faceRectangle.top + 60,paintText);
+
             }
         }
         return bitmap;
@@ -90,7 +103,7 @@ public class PhotoEditor extends AppCompatActivity {
                         try {
                             publishProgress("Detecting...");
                             Face[] result = faceServiceClient.detect(
-                                    params[0], false, false, false, false);
+                                    params[0], false, true, true, false);
                             if (result == null)
                             {
                                 publishProgress("Detection Finished. Nothing detected");
