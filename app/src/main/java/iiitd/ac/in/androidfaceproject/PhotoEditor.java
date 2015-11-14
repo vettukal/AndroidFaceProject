@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.HashMap;
 
 
 public class PhotoEditor extends AppCompatActivity {
@@ -203,6 +204,7 @@ public class PhotoEditor extends AppCompatActivity {
 
         if(tag.equals("Adjustments")){
             //TODO: Take every ribbon other than adjustments and make invisible
+            makeOtherRibbonGone("Adjustments");
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder2);
             if(adjustPop.getVisibility()==View.VISIBLE){
                 adjustPop.setVisibility(View.GONE);
@@ -227,5 +229,13 @@ public class PhotoEditor extends AppCompatActivity {
                 adjustPop.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    private void makeOtherRibbonGone(String ribbonName) {
+        HashMap<String,Integer> hm = new HashMap<>();
+        hm.put("Adjustments",R.id.effects_holder2);
+        hm.put("Filters",R.id.effects_holder3);
+
+
     }
 }
