@@ -203,7 +203,7 @@ public class PhotoEditor extends AppCompatActivity {
         // doing the dirty way of just applying the effect without checking
 
         if(tag.equals("Adjustments")){
-            //TODO: Take every ribbon other than adjustments and make invisible
+            //DONE: Take every ribbon other than adjustments and make invisible
             makeOtherRibbonGone("Adjustments");
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder2);
             if(adjustPop.getVisibility()==View.VISIBLE){
@@ -216,7 +216,8 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
         else if(tag.equals("Filters")){
-            //TODO: Take every ribbon other than filter and make invisible
+            //DONE: Take every ribbon other than filter and make invisible
+            makeOtherRibbonGone("Filters");
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder3);
             if(adjustPop==null){
                 Log.d("vince "+this.getLocalClassName()," adjustPop is null");
@@ -235,6 +236,19 @@ public class PhotoEditor extends AppCompatActivity {
         HashMap<String,Integer> hm = new HashMap<>();
         hm.put("Adjustments",R.id.effects_holder2);
         hm.put("Filters",R.id.effects_holder3);
+
+        for(String key:hm.keySet()){
+            if(key.equalsIgnoreCase(ribbonName)){
+                continue;
+            }
+
+            int idRibbon = hm.get(key);
+            LinearLayout adjustPop = (LinearLayout) findViewById(idRibbon);
+            adjustPop.setVisibility(View.GONE);
+
+        }
+
+
 
 
     }
