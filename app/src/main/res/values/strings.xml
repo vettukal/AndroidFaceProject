@@ -10,6 +10,13 @@
     <string name="title_activity_application">Application</string>
     <string name="img_desc">Some image from filter holder</string>
 
+    <string name="share">Share</string>
+    <string name="btn_pick">Pick</string>
+    <string name="btn_pick_mul">Select images</string>
+    <string name="title_activity_combine_pics">CombinePicsActivity</string>
+    <string name="btn_collage">Create collage</string>
+    <string name="title_activity_display_collage">DisplayCollageActivity</string>
+
     <string name="effect1">Brightness</string>
     <string name="effect2">Flip</string>
     <string name="effect3">Hue</string>
