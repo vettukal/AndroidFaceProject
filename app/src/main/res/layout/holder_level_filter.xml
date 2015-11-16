@@ -38,7 +38,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/img_desc"
-                    android:src="@drawable/ic_crop_level2" />
+                    android:src="@drawable/ic_effect_sepia" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:singleLine="true"
-                    android:text="@string/effect_adj_1"
+                    android:text="@string/effect_filt_1"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/img_desc"
-                    android:src="@drawable/ic_autofix" />
+                    android:src="@drawable/ic_effect_grayscale" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:singleLine="true"
-                    android:text="@string/effect2"
+                    android:text="@string/effect_filt_2"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>
@@ -100,7 +100,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/img_desc"
-                    android:src="@drawable/ic_brightness" />
+                    android:src="@drawable/ic_effect_contrast" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -112,7 +112,7 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:singleLine="true"
-                    android:text="@string/effect_adj_3"
+                    android:text="@string/effect_filt_3"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>
@@ -131,7 +131,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/img_desc"
-                    android:src="@drawable/ic_color" />
+                    android:src="@drawable/ic_effect_hue" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -143,7 +143,7 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:singleLine="true"
-                    android:text="@string/effect_adj_4"
+                    android:text="@string/effect_filt_4"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>
@@ -162,7 +162,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/img_desc"
-                    android:src="@drawable/ic_contrast" />
+                    android:src="@drawable/ic_effect_invert" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -174,7 +174,7 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:singleLine="true"
-                    android:text="@string/effect_adj_5"
+                    android:text="@string/effect_filt_5"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>

@@ -46,4 +46,9 @@
     <string name="effect_adj_3">Brightness</string>
     <string name="effect_adj_4">Color</string>
     <string name="effect_adj_5">Contrast</string>
+    <string name="effect_filt_1">Sepia</string>
+    <string name="effect_filt_2">Monochrome</string>
+    <string name="effect_filt_3">HDR</string>
+    <string name="effect_filt_4">Unicolor</string>
+    <string name="effect_filt_5">Inverse</string>
 </resources>
