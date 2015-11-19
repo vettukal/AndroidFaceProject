@@ -1,11 +1,8 @@
 package iiitd.ac.in.androidfaceproject;
 
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,12 +19,17 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facepp.error.FaceppParseException;
+import com.facepp.http.HttpRequests;
+import com.facepp.http.PostParameters;
 import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.contract.Face;
 import com.microsoft.projectoxford.face.contract.FaceAttribute;
 import com.microsoft.projectoxford.face.contract.FaceRectangle;
 import com.microsoft.projectoxford.face.contract.GenderEnum;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -50,6 +52,7 @@ public class PhotoEditor extends AppCompatActivity {
 
     boolean lvlOneScrollView = false;
     boolean lvltwoScrollView = false;
+    boolean pos = true;
     HorizontalScrollView[] scrollViewsLvlOne;
     HorizontalScrollView[] scrollViewsLvlTwo;
 
@@ -176,7 +179,7 @@ public class PhotoEditor extends AppCompatActivity {
         String filePath = getIntent().getStringExtra("filename");
         //Toast.makeText(this,filePath,Toast.LENGTH_LONG).show();
         Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
-        Log.d("vincent", filePath);
+        //Log.d("vincent", filePath);
         //Bitmap bitmap1 = BitmapFactory.decodeStream(si1);
         //tv1.setImageBitmap(yourSelectedImage);
         tv1.setImageResource(R.drawable.gallerypng);
@@ -415,7 +418,7 @@ public class PhotoEditor extends AppCompatActivity {
 
     private Mat filterInverse(Mat imageMat) {
         Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY, 4);
-        Core.bitwise_not(imageMat,imageMat);
+        Core.bitwise_not(imageMat, imageMat);
         return imageMat;
     }
 
@@ -455,7 +458,141 @@ public class PhotoEditor extends AppCompatActivity {
             }
         } else if (tag.equals("AgeGender")) {
             Log.d("vince", " Going to detect the age and gender");
-            detectAndFrame(logbitmap);
+            //Frame(logbitmap);
+            FaceppDetect faceppDetect = new FaceppDetect();
+            faceppDetect.setDetectCallback(new DetectCallback() {
+
+                public void detectResult(JSONObject rst) {
+                    //Log.v(TAG, rst.toString());
+
+                    Log.v("My result", rst.toString());
+
+                    //use the red paint
+                    //Paint paint = new Paint();
+                    //paint.setColor(Color.RED);
+                    //paint.setStrokeWidth(Math.max(logbitmap.getWidth(), logbitmap.getHeight()) / 100f);
+
+                    //Paint textPaint = new Paint();
+                    //textPaint.setColor(Color.YELLOW);
+                    //textPaint.setStrokeWidth(Math.max(logbitmap.getWidth(), logbitmap.getHeight()) / 100f);
+                    //textPaint.setTextSize(50F);
+
+                    //create a new canvas
+                    //Bitmap bitmap = Bitmap.createBitmap(logbitmap.getWidth(), logbitmap.getHeight(), logbitmap.getConfig());
+                    //Canvas canvas = new Canvas(bitmap);
+                    //canvas.drawBitmap(logbitmap, new android.graphics.Matrix(), null);
+
+
+                    try {
+                        //find out all faces
+                        final int count = rst.getJSONArray("face").length();
+                        final Face[] faces = new Face[count];
+                        for (int i = 0; i < count; ++i) {
+                            faces[i] = new Face();
+                            faces[i].attributes= new FaceAttribute();
+                            faces[i].faceRectangle = new FaceRectangle();
+                            float x, y, w, h;
+                            //get the center point
+                            x = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getJSONObject("center").getDouble("x");
+                            y = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getJSONObject("center").getDouble("y");
+
+                            //get face size
+                            w = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getDouble("width");
+                            h = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getDouble("height");
+
+                            //change percent value to the real size
+                            x = x / 100 * logbitmap.getWidth();
+                            w = w / 100 * logbitmap.getWidth() * 0.7f;
+                            y = y / 100 * logbitmap.getHeight();
+                            h = h / 100 * logbitmap.getHeight() * 0.7f;
+
+                            //Log.v("Dimensions","X = "+x+" W = "+w+" Y = "+y+" H = "+h);
+
+                            //draw the box to mark it out
+                            //canvas.drawLine(x - w, y - h, x - w, y + h, paint);
+                            //canvas.drawLine(x - w, y - h, x + w, y - h, paint);
+                            //canvas.drawLine(x + w, y + h, x - w, y + h, paint);
+                            //canvas.drawLine(x + w, y + h, x + w, y - h, paint);
+
+                            String gender = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("gender").getString("value");
+                            double genderConfidence = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("gender").getDouble("confidence");
+
+                            if(faces[i]==null)
+                                Log.d("vince","faces[i] is mull");
+                            if(faces[i].attributes==null)
+                                Log.d("vince","faces[i].attributes==null");
+
+                            if(gender.equals("Male"))
+                                faces[i].attributes.gender = GenderEnum.male;
+                            else
+                                faces[i].attributes.gender = GenderEnum.female;
+
+                            String age = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getString("value");
+                            int range = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getInt("range");
+
+
+                            // vinceVasu
+                            faces[i].faceRectangle.height = (int) h*2;
+                            faces[i].faceRectangle.width = (int) w*2;
+                            faces[i].faceRectangle.left = (int)  (x-w);
+                            faces[i].faceRectangle.top = (int) (y-h);
+
+                            faces[i].attributes.age = Double.valueOf(age);
+
+
+
+                            String displayText = gender+"/"+age+"(+-"+range+")";
+
+                            //float textX = (float)rst.getJSONArray("face").getJSONObject(i).getJSONObject("position").getJSONObject("center").getDouble("x");
+                            //float textY = (float)rst.getJSONArray("face").getJSONObject(i).getJSONObject("position").getJSONObject("center").getDouble("y");
+
+                            //float xCoord = textX;
+                            //float yCoord = textY;
+
+                            float fontSize = w*h*0.02F;
+                            if(fontSize>50F)
+                                fontSize = 50F;
+                            else if(fontSize<25F)
+                                fontSize = 25F;
+
+                            //textPaint.setTextSize(fontSize);
+
+                            if(pos) {
+                                //canvas.drawText(displayText, x - w, y - h, textPaint);
+                                pos = false;
+                            }
+                            else {
+                                //canvas.drawText(displayText,x-w,y+h,textPaint);
+                                pos = true;
+                            }
+                        }
+
+                        //save new image
+
+                        //logbitmap = bitmap;
+
+                        PhotoEditor.this.runOnUiThread(new Runnable() {
+
+                            public void run() {
+                                //show the image
+                                //vincentVasu
+                                ImageView imageView = (ImageView) findViewById(R.id.imgView);
+                                imageView.setImageBitmap(drawFaceRectanglesOnBitmap(logbitmap, faces));
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ;
+                    }
+
+                }
+            });
+            faceppDetect.detect(logbitmap);
 
         }
     }
@@ -477,5 +614,51 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
 
+    }
+
+    private class FaceppDetect {
+        DetectCallback callback = null;
+
+        public void setDetectCallback(DetectCallback detectCallback) {
+            callback = detectCallback;
+        }
+
+        public void detect(final Bitmap image) {
+
+            new Thread(new Runnable() {
+
+                public void run() {
+                    HttpRequests httpRequests = new HttpRequests("36d55d5e02d03582b677b42365073fa8", "KY_k9ldTUw0WgQ-rBAxFPvhztMQhLnOD", true, false);
+                    //Log.v(TAG, "image size : " + img.getWidth() + " " + img.getHeight());
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    float scale = Math.min(1, Math.min(600f / logbitmap.getWidth(), 600f / logbitmap.getHeight()));
+                    android.graphics.Matrix matrix = new Matrix();
+                    matrix.postScale(scale, scale);
+
+                    Bitmap imgSmall = Bitmap.createBitmap(logbitmap, 0, 0, logbitmap.getWidth(), logbitmap.getHeight(), matrix, false);
+                    //Log.v(TAG, "imgSmall size : " + imgSmall.getWidth() + " " + imgSmall.getHeight());
+
+                    imgSmall.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] array = stream.toByteArray();
+
+                    try {
+                        //detect
+                        JSONObject result = httpRequests.detectionDetect(new PostParameters().setImg(array));
+                        //finished , then call the callback function
+                        if (callback != null) {
+                            callback.detectResult(result);
+                        }
+                    } catch (FaceppParseException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }).start();
+        }
+    }
+
+    interface DetectCallback {
+        void detectResult(JSONObject rst);
     }
 }
