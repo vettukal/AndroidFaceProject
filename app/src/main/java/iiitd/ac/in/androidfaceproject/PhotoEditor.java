@@ -325,6 +325,8 @@ public class PhotoEditor extends AppCompatActivity {
         Mat imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
         Bitmap myBitmap32 = logbitmap.copy(Bitmap.Config.ARGB_8888, true);
         Utils.bitmapToMat(myBitmap32, imageMat);
+        myBitmap32.recycle();
+        logbitmap = null;
 
         try {
             if (tag.equals("Sepia")) {
@@ -349,18 +351,23 @@ public class PhotoEditor extends AppCompatActivity {
             }
 
             //Then convert the processed Mat to Bitmap
-            Bitmap resultBitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(imageMat, resultBitmap);
+            logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(imageMat, logbitmap);
 
             //Set member to the resultBitmap. This member is displayed in an ImageView
             ImageView imageView = (ImageView) findViewById(R.id.imgView);
-            imageView.setImageBitmap(resultBitmap);
+            imageView.setImageBitmap(logbitmap);
 
         } catch (Exception exception) {
             Toast.makeText(this, "Can't apply filter: " + tag, Toast.LENGTH_LONG).show();
             exception.printStackTrace();
         }
-        myBitmap32.recycle();
+
+        finally {
+            imageMat = null;
+            //myBitmap32.recycle();
+        }
+        //myBitmap32.recycle();
 
     }
 
@@ -379,7 +386,7 @@ public class PhotoEditor extends AppCompatActivity {
 
         Core.transform(imageMat, imageMat, mSepiaKernel);
 
-
+        mSepiaKernel  = null;
         return imageMat;
     }
 
@@ -394,7 +401,8 @@ public class PhotoEditor extends AppCompatActivity {
         channels.set(i, tempMat);
         }
         Core.merge(channels,imageMat);
-
+        channels = null;
+        tempMat = null;
         return imageMat;
     }
 
