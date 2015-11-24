@@ -6,12 +6,15 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 public class DisplayCollageActivity extends Activity {
     String filepath;
@@ -31,10 +34,33 @@ public class DisplayCollageActivity extends Activity {
         File file=new  File(filepath);
         //set image to the imageview
         if(file.exists()) {
-            Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-            ImageView imgView = (ImageView) findViewById(R.id.singleImageView);
-            imgView.setImageBitmap(myBitmap);
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                FileInputStream fs = new FileInputStream(file);
+                BitmapFactory.decodeStream(fs, null, options);
+                fs.close();
+                fs= new FileInputStream(file);
+                options.inJustDecodeBounds = false;
+                Bitmap myBitmap = BitmapFactory.decodeStream(fs, null, options);
+                //these 3 lines were there initially
+                //Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                ImageView imgView = (ImageView) findViewById(R.id.singleImageView);
+                imgView.setImageBitmap(myBitmap);
+                //
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         }
+        FloatingActionButton fab=(FloatingActionButton)findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //receive filepath from intent
+
+                share();
+            }
+        });
     }
 
     @Override

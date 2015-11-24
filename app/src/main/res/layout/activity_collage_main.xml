@@ -19,7 +19,7 @@
         android:background="@color/Blue"
         android:gravity="center"
         android:padding="5dp"
-        android:text="Home"
+        android:text="Collage Home"
         android:textColor="@android:color/white"
         android:textStyle="bold" />
 
@@ -54,7 +54,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/colors" />
+            android:src="@drawable/rainbow" />
     </ViewSwitcher>
 
     <LinearLayout

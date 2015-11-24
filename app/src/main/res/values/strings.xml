@@ -3,6 +3,7 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
     <string name="title_activity_test_sample">test_sample</string>
     <string name="title_activity_landing_page">LandingPage</string>
     <string name="title_activity_photo_editor">PhotoEditor</string>
@@ -16,6 +17,12 @@
     <string name="title_activity_combine_pics">CombinePicsActivity</string>
     <string name="btn_collage">Create collage</string>
     <string name="title_activity_display_collage">DisplayCollageActivity</string>
+    <string name="nine">nine</string>
+    <string name="four">four</string>
+    <string name="three">three</string>
+    <string name="layout_temp3">layout temp3</string>
+    <string name="layout_temp4">layout temp4</string>
+    <string name="layout_temp9">layout temp9</string>
 
     <string name="effect1">Brightness</string>
     <string name="effect2">Flip</string>
@@ -51,4 +58,6 @@
     <string name="effect_filt_3">HDR</string>
     <string name="effect_filt_4">Unicolor</string>
     <string name="effect_filt_5">Inverse</string>
+    <string name="title_activity_collage_first">CollageFirst</string>
 </resources>
+

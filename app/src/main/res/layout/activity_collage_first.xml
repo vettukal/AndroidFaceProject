@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true">
+    <!--tools:context="com.example.sanchari.mccollage.DisplayCollageActivity"-->
+    <ImageView
+        android:id="@+id/chooseLayoutImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contentDescription="Where the main collage image is loaded"
+        android:scaleType="centerInside"
+        android:onClick="handleImageClick"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg2_bak">
+    </ImageView>
+
+    <ImageButton
+        android:id="@+id/collage9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/collage4"
+        android:onClick="onClickCollage9Btn"
+        android:src="@drawable/ic_temp9" />
+
+    <ImageButton
+        android:id="@+id/collage4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@+id/collage3"
+        android:onClick="onClickCollage4Btn"
+        android:src="@drawable/ic_temp4" />
+
+    <ImageButton
+        android:id="@+id/collage3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="onClickCollage3Btn"
+        android:src="@drawable/ic_temp3" />
+
+    <TextView
+        android:id="@+id/tvSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select template"
+        android:textColor="@color/GhostWhite"
+        android:textSize="32sp"
+        android:layout_above="@+id/collage9"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="107dp" />
+
+</RelativeLayout>

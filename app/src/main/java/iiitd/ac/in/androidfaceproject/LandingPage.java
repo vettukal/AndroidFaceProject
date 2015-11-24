@@ -108,7 +108,7 @@ public class LandingPage extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(a,CollageMainActivity.class);
+                Intent intent = new Intent(a,CollageFirst.class);
                 startActivity(intent);
 
             }
@@ -138,11 +138,6 @@ public class LandingPage extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
-
     @Override
     protected void onStop() {
         super.onStop();
