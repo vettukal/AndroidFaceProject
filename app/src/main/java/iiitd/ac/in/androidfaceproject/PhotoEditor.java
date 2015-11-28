@@ -52,7 +52,8 @@ public class PhotoEditor extends AppCompatActivity {
 
     boolean lvlOneScrollView = false;
     boolean lvltwoScrollView = false;
-    boolean pos = true;
+    static boolean pos = true;
+    static float fontSize = 0;
     HorizontalScrollView[] scrollViewsLvlOne;
     HorizontalScrollView[] scrollViewsLvlTwo;
 
@@ -65,6 +66,7 @@ public class PhotoEditor extends AppCompatActivity {
             new FaceServiceClient("f6a16646879b4f0aa33c208521225faa");
 
     Bitmap logbitmap;
+    static int range = 0;
 
     // Detect faces by uploading face images
 // Frame faces after detection
@@ -82,7 +84,7 @@ public class PhotoEditor extends AppCompatActivity {
         //paintText.setAntiAlias(true);
         //paintText.setStyle(Paint.Style.STROKE);
         paintText.setColor(Color.YELLOW);
-        paintText.setTextSize(80);
+        paintText.setTextSize(fontSize);
         if (faces != null) {
             for (Face face : faces) {
                 FaceRectangle faceRectangle = face.faceRectangle;
@@ -103,10 +105,21 @@ public class PhotoEditor extends AppCompatActivity {
                 } else {
                     dGender = "M";
                 }
-                canvas.drawText("" + (int) attribute.age + "/" + dGender, faceRectangle.left + (faceRectangle.width / 4), faceRectangle.top - 25, paintText);
+
+                String ageVal = Double.valueOf(attribute.age)+"(+-"+Integer.valueOf(range)+")";
+
+                if(pos) {
+                    canvas.drawText("" + ageVal + "/" + dGender, faceRectangle.left + (faceRectangle.width / 4), faceRectangle.top - 25, paintText);
+                    pos = false;
+                }
+                else {
+                    canvas.drawText("" + ageVal + "/" + dGender, faceRectangle.left + (faceRectangle.width / 4), faceRectangle.top + faceRectangle.height, paintText);
+                    pos = true;
+                }
 
             }
         }
+
         return bitmap;
     }
 
@@ -532,7 +545,7 @@ public class PhotoEditor extends AppCompatActivity {
                                 faces[i].attributes.gender = GenderEnum.female;
 
                             String age = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getString("value");
-                            int range = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getInt("range");
+                            range = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getInt("range");
 
 
                             // vinceVasu
@@ -553,22 +566,13 @@ public class PhotoEditor extends AppCompatActivity {
                             //float xCoord = textX;
                             //float yCoord = textY;
 
-                            float fontSize = w*h*0.02F;
+                            fontSize = w*h*0.02F;
                             if(fontSize>50F)
                                 fontSize = 50F;
                             else if(fontSize<25F)
                                 fontSize = 25F;
 
                             //textPaint.setTextSize(fontSize);
-
-                            if(pos) {
-                                //canvas.drawText(displayText, x - w, y - h, textPaint);
-                                pos = false;
-                            }
-                            else {
-                                //canvas.drawText(displayText,x-w,y+h,textPaint);
-                                pos = true;
-                            }
                         }
 
                         //save new image
