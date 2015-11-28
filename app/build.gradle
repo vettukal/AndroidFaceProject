@@ -10,7 +10,7 @@ android {
     buildToolsVersion "23.0.1"
     defaultConfig {
         applicationId "iiitd.ac.in.androidfaceproject"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
@@ -34,7 +34,8 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
     compile 'com.microsoft.projectoxford:face:0.5.0'
     //compile 'com.getbase.floatingactionbuttion:1.9.1'
-    compile 'com.android.support:design:22.2.0'
+    compile 'com.android.support:design:23.0.1'
+    compile project(':openCVLibrary300')
 }
 
 repositories {
