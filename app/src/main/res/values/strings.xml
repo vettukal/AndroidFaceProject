@@ -64,5 +64,7 @@
     <string name="contrast_dialog_title">Adjust Contrast</string>
     <string name="color_hint">Move sliders to adjust color (RGB) values</string>
     <string name="title_activity_collage_first">CollageFirst</string>
+    <string name="saveButton">Save</string>
+    <string name="undoButton">Undo</string>
 </resources>
 

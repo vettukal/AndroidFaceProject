@@ -48,6 +48,8 @@ import org.opencv.imgproc.Imgproc;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -360,6 +362,11 @@ public class PhotoEditor extends AppCompatActivity {
         }
         else if (tag.equals("Color")) {
             double[] rgb = showColorDialog();
+        }
+        else if (tag.equals("AutoFix"))  {
+                autoFix();
+        }
+        else if (tag.equals("Crop"))  {
 
         }
 
@@ -590,7 +597,58 @@ public class PhotoEditor extends AppCompatActivity {
             } else {
                 adjustPop.setVisibility(View.VISIBLE);
             }
-        } else if (tag.equals("AgeGender")) {
+        } else if (tag.equals("Save")) {
+            //DONE: Take every ribbon other than filter and make invisible
+            makeOtherRibbonGone("Save");
+
+            FileOutputStream out = null;
+            try {
+                out = new FileOutputStream(getIntent().getStringExtra("filename"));
+                logbitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+                // PNG is a lossless format, the compression factor (100) is ignored
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Toast.makeText(this, "Image Saved", Toast.LENGTH_LONG).show();
+        }else if (tag.equals("Undo")) {
+            //DONE: Take every ribbon other than filter and make invisible
+            makeOtherRibbonGone("Undo");
+            String filePath = getIntent().getStringExtra("filename");
+            Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
+            File imageFile = new File(filePath);
+            if (imageFile.exists()) {
+                Log.d("vincent", "image file exists");
+                Toast.makeText(this, "Image file loaded", Toast.LENGTH_LONG).show();
+                ImageView imageView = (ImageView) findViewById((R.id.imgView));
+                Log.d("vincent", imageFile.getAbsolutePath());
+                imageView.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+
+
+                logbitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                if (logbitmap == null) {
+                    Log.d("vincent", "bitmap is null");
+
+                } else {
+                    Log.d("vincent", "bitmap is NOT NOT null");
+                }
+                imageView.setImageBitmap(logbitmap);
+                Log.d("vincent", "file decoded");
+            } else {
+                Log.d("vincent", "image file not NOT exists");
+            }
+
+        }
+
+        else if (tag.equals("AgeGender")) {
             Log.d("vince", " Going to detect the age and gender");
             //Frame(logbitmap);
             FaceppDetect faceppDetect = new FaceppDetect();
@@ -724,14 +782,14 @@ public class PhotoEditor extends AppCompatActivity {
         mBrightnessKernel.put(3, 0, 0.000f, 0.000f, 0.000f, 1f);
 
         Core.transform(imageMat, imageMat, mBrightnessKernel);
-
+        mBrightnessKernel = null;
         logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(imageMat, logbitmap);
-
+        imageMat = null;
         //Set member to the resultBitmap. This member is displayed in an ImageView
         ImageView imageView = (ImageView) findViewById(R.id.imgView);
         imageView.setImageBitmap(logbitmap);
-        imageMat = null;
+
     }
 
 
@@ -748,11 +806,15 @@ public class PhotoEditor extends AppCompatActivity {
 
         logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(imageMat, logbitmap);
-
+        imageMat = null;
         //Set member to the resultBitmap. This member is displayed in an ImageView
         ImageView imageView = (ImageView) findViewById(R.id.imgView);
         imageView.setImageBitmap(logbitmap);
-        imageMat = null;
+
+    }
+
+    public void autoFix(){
+        changeContrast(1.5);
     }
 
 
@@ -772,14 +834,14 @@ public class PhotoEditor extends AppCompatActivity {
         mBrightnessKernel.put(3, 0, 0.000f, 0.000f, 0.000f, 1f);
 
         Core.transform(imageMat, imageMat, mBrightnessKernel);
-
+        mBrightnessKernel = null;
         logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(imageMat, logbitmap);
-
+        imageMat = null;
         //Set member to the resultBitmap. This member is displayed in an ImageView
         ImageView imageView = (ImageView) findViewById(R.id.imgView);
         imageView.setImageBitmap(logbitmap);
-        imageMat = null;
+
     }
 
     private class FaceppDetect {

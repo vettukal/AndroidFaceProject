@@ -121,7 +121,7 @@
                 android:gravity="center"
                 android:onClick="onClickEffectButton"
                 android:layout_marginRight="5dp"
-                android:tag="Saturation" >
+                android:tag="Undo" >
 
                 <ImageView
                     android:id="@+id/effect_img24"
@@ -129,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/img_desc"
-                    android:src="@drawable/ic_saturation" />
+                    android:src="@drawable/ic_undo" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -141,7 +141,38 @@
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:singleLine="true"
-                    android:text="@string/effect24"
+                    android:text="@string/undoButton"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:onClick="onClickEffectButton"
+                android:layout_marginRight="5dp"
+                android:tag="Save" >
+
+                <ImageView
+                    android:id="@+id/effect_img25"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/img_desc"
+                    android:src="@drawable/ic_save" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/effect_img25"
+                    android:layout_centerHorizontal="true"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:singleLine="true"
+                    android:text="@string/saveButton"
                     android:textColor="#ffffff"
                     android:textSize="16sp" />
             </RelativeLayout>
