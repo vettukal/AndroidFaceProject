@@ -2,6 +2,7 @@ package iiitd.ac.in.androidfaceproject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,6 +38,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +57,7 @@ public class CustomGalleryActivity extends Activity {
     private ImageLoader imageLoader;
     Point size;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,7 @@ public class CustomGalleryActivity extends Activity {
         setContentView(R.layout.gallery);
 
         action = getIntent().getAction();
+
         if (action == null) {
             finish();
         }
@@ -72,6 +76,7 @@ public class CustomGalleryActivity extends Activity {
     }
 
     private void initImageLoader() {
+        Log.d(TAG,"initimageloader");
         try {
             String CACHE_DIR = Environment.getExternalStorageDirectory()
                     .getAbsolutePath() + "/.temp_tmp";
@@ -99,7 +104,7 @@ public class CustomGalleryActivity extends Activity {
     }
 
     private void init() {
-
+        Log.d(TAG,"init");
         handler = new Handler();
         gridGallery = (GridView) findViewById(R.id.gridGallery);
         gridGallery.setFastScrollEnabled(true);
@@ -252,24 +257,55 @@ public class CustomGalleryActivity extends Activity {
 
     private Bitmap createSingle()
     {
-        Bitmap bmp = Bitmap.createBitmap(size.x,size.y, Bitmap.Config.ARGB_8888);
+        Log.d(TAG,"create sigle method");
+        Bitmap bmp = Bitmap.createBitmap(size.x,size.y, Bitmap.Config.RGB_565);
+        Log.d(TAG,"width="+size.x+" height="+size.y);
         Canvas canvas = new Canvas(bmp);
         canvas.drawColor(Color.GRAY);
-        Matrix m=new Matrix(size.x/3,size.y/3);
-        Bitmap b=null;
+        Matrix m=new Matrix(size.x,size.y);
+        Bitmap b;
         Cell cell;
         BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        //options.inPreferredConfig = Bitmap.Config.RGB_565;
+        //options.inJustDecodeBounds=true;//options.inPurgeable=true;
+        //options.inInputShareable=true;
+        Log.d(TAG,"options height="+options.outHeight+" width="+options.outWidth+" mimetype="+options.outMimeType);
+        //int inSampleSize=1;
 
         try {
+            Log.d(TAG,"allpath length "+allPath.length);
             for (int i = 0; i < allPath.length; i++) {
-                b = BitmapFactory.decodeStream(new FileInputStream(new File(allPath[i])), null, options);
+                Log.d(TAG,"i="+i);
+                options.inJustDecodeBounds = true;
+                InputStream fs=new FileInputStream(new File(allPath[i]));
+                BitmapFactory.decodeStream(fs, null, options);
+                fs.close();
                 cell = m.getCell(i);
-                b = Bitmap.createScaledBitmap(b,size.x/3 ,size.y/3, true);
+                int scale=1;
+                int REQUIRED_HEIGHT=cell.getBottom()-cell.getTop();
+                int REQUIRED_WIDTH=cell.getRight()-cell.getLeft();
+                while(options.outWidth/scale/2>=REQUIRED_WIDTH && options.outHeight/scale/2>=REQUIRED_HEIGHT)
+                    scale*=2;
+                BitmapFactory.Options o2 = new BitmapFactory.Options();
+                //fs.close();
+                fs=new FileInputStream(new File(allPath[i]));
+                o2.inSampleSize=scale;
+                options.inJustDecodeBounds=false;
+                //sometimes outofmemory
+                b=BitmapFactory.decodeStream(fs, null, o2);
+                //Log.d(TAG,"b height="+b.getHeight()+" b width="+b.getWidth());
+                /*if(b==null)
+                    Log.d(TAG," bmp null ");
+                else
+                    Log.d(TAG," not null bmp ");*/
+
+                b = Bitmap.createScaledBitmap(b,cell.getRight()-cell.getLeft() ,cell.getBottom()-cell.getTop(), true);
                 //Log.d(TAG,"i="+i+" top=" + cell.getTop() + " left=" + cell.getLeft());
                 canvas.save();
                 //canvas.rotate(10);
-                canvas.drawBitmap(b, cell.getLeft(),cell.getTop(),null);
+                canvas.drawBitmap(b, cell.getLeft(), cell.getTop(), null);
+                b.recycle();
+                //b=null;
                 //canvas.restore();
             }
             return bmp;
@@ -277,7 +313,14 @@ public class CustomGalleryActivity extends Activity {
         catch(FileNotFoundException e)
         {
             Log.d(TAG,e.toString());
+            //System.gc();
+            //b=null;
         }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        //b=null;
         return null;
     }
 
@@ -308,6 +351,7 @@ public class CustomGalleryActivity extends Activity {
 
         @Override
         public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+            Log.d(TAG,"adapterview mitemmulticlk listener");
             adapter.changeSelection(v, position);
 
         }
@@ -325,6 +369,7 @@ public class CustomGalleryActivity extends Activity {
     };
 
     private ArrayList<CustomGallery> getGalleryPhotos() {
+        Log.d(TAG,"getgalleryphotos");
         ArrayList<CustomGallery> galleryList = new ArrayList<CustomGallery>();
 
         try {
@@ -356,6 +401,45 @@ public class CustomGalleryActivity extends Activity {
         // show newest photo at beginning of the list
         Collections.reverse(galleryList);
         return galleryList;
+    }
+
+    public static Bitmap decodeSampledBitmapFromResource(Resources res, int resId,
+                                                         int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(res, resId, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
 

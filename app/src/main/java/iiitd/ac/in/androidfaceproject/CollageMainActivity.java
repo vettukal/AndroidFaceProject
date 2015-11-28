@@ -28,17 +28,22 @@ public class CollageMainActivity extends Activity {
     ViewSwitcher viewSwitcher;
     ImageLoader imageLoader;
     private final String TAG="cool_collage_main";
+    //private int layout_num;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG,"on create");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_collage_main);
+        Intent intent=getIntent();
+        //layout_num=intent.getIntExtra("layout_num",4); //setting default 4 now
         initImageLoader();
         init();
     }
 
     private void initImageLoader() {
+        Log.d(TAG," initimageloader");
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc().imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
                 .bitmapConfig(Bitmap.Config.RGB_565).build();
@@ -52,7 +57,7 @@ public class CollageMainActivity extends Activity {
     }
 
     private void init() {
-
+        Log.d(TAG," init");
         Handler handler = new Handler();
         GridView gridGallery=(GridView) findViewById(R.id.gridGallery);
         if(gridGallery==null)
@@ -63,6 +68,7 @@ public class CollageMainActivity extends Activity {
         gridGallery.setAdapter(adapter);
 
         viewSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
+        Log.d(TAG,"want to know display child setting to 1");
         viewSwitcher.setDisplayedChild(1);
 
         imgSinglePick = (ImageView) findViewById(R.id.imgSinglePick);
@@ -73,7 +79,9 @@ public class CollageMainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
+                Log.d(TAG," btnpickmul clicked");
                 Intent i = new Intent(Constants.ACTION_MULTIPLE_PICK);
+                //i.putExtra("layout_num",layout_num);
                 startActivityForResult(i, 200);
             }
         });
@@ -83,8 +91,9 @@ public class CollageMainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.d(TAG, " onactivityresult");
         if (requestCode == 200 && resultCode == Activity.RESULT_OK) {
+            Log.d(TAG,"");
             String[] all_path = data.getStringArrayExtra("all_path");
 
             ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
@@ -95,7 +104,7 @@ public class CollageMainActivity extends Activity {
 
                 dataT.add(item);
             }
-
+            Log.d(TAG,"want to know display child setting to 0");
             viewSwitcher.setDisplayedChild(0);
             adapter.addAll(dataT);
         }
