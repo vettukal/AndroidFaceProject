@@ -1,11 +1,8 @@
 package iiitd.ac.in.androidfaceproject;
 
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
+import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,26 +19,42 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.facepp.error.FaceppParseException;
+import com.facepp.http.HttpRequests;
+import com.facepp.http.PostParameters;
 import com.microsoft.projectoxford.face.FaceServiceClient;
 import com.microsoft.projectoxford.face.contract.Face;
 import com.microsoft.projectoxford.face.contract.FaceAttribute;
 import com.microsoft.projectoxford.face.contract.FaceRectangle;
 import com.microsoft.projectoxford.face.contract.GenderEnum;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.opencv.android.Utils;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
-
 
 public class PhotoEditor extends AppCompatActivity {
 
+    static {
+        System.loadLibrary("opencv_java3");
+    }
 
     boolean lvlOneScrollView = false;
     boolean lvltwoScrollView = false;
-    HorizontalScrollView [] scrollViewsLvlOne;
-    HorizontalScrollView [] scrollViewsLvlTwo;
+    boolean pos = true;
+    HorizontalScrollView[] scrollViewsLvlOne;
+    HorizontalScrollView[] scrollViewsLvlTwo;
 
     private RelativeLayout toolbox;
 
@@ -82,16 +95,15 @@ public class PhotoEditor extends AppCompatActivity {
 
                 FaceAttribute attribute = face.attributes;
 
-                Log.d("vince PhotoEditor", "Gender of the face: "+attribute.gender);
-                Log.d("vince PhotoEditor", "Age of the face: "+attribute.age);
-                String dGender= "";
-                if(attribute.gender == GenderEnum.female){
+                Log.d("vince PhotoEditor", "Gender of the face: " + attribute.gender);
+                Log.d("vince PhotoEditor", "Age of the face: " + attribute.age);
+                String dGender = "";
+                if (attribute.gender == GenderEnum.female) {
                     dGender = "F";
-                }
-                else {
+                } else {
                     dGender = "M";
                 }
-                canvas.drawText(""+(int)attribute.age+"/"+dGender,faceRectangle.left+(faceRectangle.width/4),faceRectangle.top - 25,paintText);
+                canvas.drawText("" + (int) attribute.age + "/" + dGender, faceRectangle.left + (faceRectangle.width / 4), faceRectangle.top - 25, paintText);
 
             }
         }
@@ -99,8 +111,7 @@ public class PhotoEditor extends AppCompatActivity {
     }
 
 
-    private void detectAndFrame(final Bitmap imageBitmap)
-    {
+    private void detectAndFrame(final Bitmap imageBitmap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
         ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
@@ -112,8 +123,7 @@ public class PhotoEditor extends AppCompatActivity {
                             publishProgress("Detecting...");
                             Face[] result = faceServiceClient.detect(
                                     params[0], false, true, true, false);
-                            if (result == null)
-                            {
+                            if (result == null) {
                                 publishProgress("Detection Finished. Nothing detected");
                                 return null;
                             }
@@ -126,21 +136,24 @@ public class PhotoEditor extends AppCompatActivity {
                             return null;
                         }
                     }
+
                     @Override
                     protected void onPreExecute() {
                         detectionProgressDialog.show();
 
                     }
+
                     @Override
                     protected void onProgressUpdate(String... progress) {
                         detectionProgressDialog.setMessage(progress[0]);
 
                     }
+
                     @Override
                     protected void onPostExecute(Face[] result) {
                         detectionProgressDialog.dismiss();
                         if (result == null) return;
-                        ImageView imageView = (ImageView)findViewById(R.id.imgView);
+                        ImageView imageView = (ImageView) findViewById(R.id.imgView);
                         imageView.setImageBitmap(drawFaceRectanglesOnBitmap(imageBitmap, result));
                         imageBitmap.recycle();
 
@@ -148,7 +161,6 @@ public class PhotoEditor extends AppCompatActivity {
                 };
         detectTask.execute(inputStream);
     }
-
 
 
     @Override
@@ -162,105 +174,101 @@ public class PhotoEditor extends AppCompatActivity {
         toolbox = (RelativeLayout) findViewById(R.id.toolbox);
         ImageView tv1;
         //tv1.setImageResource(R.id.imageButtonCamera);
-        tv1= (ImageView) findViewById(R.id.imgView);
-       // tv1.setImageResource(R.id.imageButtonCamera);
+        tv1 = (ImageView) findViewById(R.id.imgView);
+        // tv1.setImageResource(R.id.imageButtonCamera);
         String filePath = getIntent().getStringExtra("filename");
         //Toast.makeText(this,filePath,Toast.LENGTH_LONG).show();
         Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
-        Log.d("vincent",filePath);
+        //Log.d("vincent", filePath);
         //Bitmap bitmap1 = BitmapFactory.decodeStream(si1);
         //tv1.setImageBitmap(yourSelectedImage);
         tv1.setImageResource(R.drawable.gallerypng);
 
-        File imageFile = new  File(filePath);
+        File imageFile = new File(filePath);
 
         File destination = new File(Environment
                 .getExternalStorageDirectory(), "1445871154448" + ".jpg");
         //imageFile = destination;
 
         /**
-        scrollViewsLvlOne = new HorizontalScrollView [] {(HorizontalScrollView) findViewById(R.id.hsv_filters),
-                (HorizontalScrollView) findViewById(R.id.hsv_adjustments)};
-        */
-        if(imageFile.exists()){
-            Log.d("vincent","image file exists");
-
-            Toast.makeText(this,"image file exists",Toast.LENGTH_LONG).show();
-            ImageView imageView= (ImageView) findViewById((R.id.imgView));
-            Log.d("vincent",imageFile.getAbsolutePath());
+         scrollViewsLvlOne = new HorizontalScrollView [] {(HorizontalScrollView) findViewById(R.id.hsv_filters),
+         (HorizontalScrollView) findViewById(R.id.hsv_adjustments)};
+         */
+        if (imageFile.exists()) {
+            Log.d("vincent", "image file exists");
+            Toast.makeText(this, "image file exists", Toast.LENGTH_LONG).show();
+            ImageView imageView = (ImageView) findViewById((R.id.imgView));
+            Log.d("vincent", imageFile.getAbsolutePath());
             imageView.setImageBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath()));
+
 
             logbitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
             //Log.d("vincent",logbitmap.toString());
-            if(logbitmap == null){
-                Log.d("vincent","bitmap is null");
+            if (logbitmap == null) {
+                Log.d("vincent", "bitmap is null");
 
-            }
-            else{
-                Log.d("vincent","bitmap is NOT NOT null");
+            } else {
+                Log.d("vincent", "bitmap is NOT NOT null");
             }
             imageView.setImageBitmap(logbitmap);
-            Log.d("vincent","file decoded");
-        }
-        else {
-            Log.d("vincent","image file not NOT exists");
+            Log.d("vincent", "file decoded");
+        } else {
+            Log.d("vincent", "image file not NOT exists");
         }
         detectionProgressDialog = new ProgressDialog(this);
     }
 
     /**
-    public void onClickAdjstmentBtn(View v)
-    {
-        HorizontalScrollView hsvAdjustments = (HorizontalScrollView) findViewById(R.id.hsv_adjustments);
-        if(hsvAdjustments.getVisibility() == View.VISIBLE)
-            hsvAdjustments.setVisibility(View.GONE);
-        else if(lvlOneScrollView) {
-            turnOffScrollView(1);
-            hsvAdjustments.setVisibility(View.VISIBLE);
-            lvlOneScrollView = true;
-            }
-        else{
-            hsvAdjustments.setVisibility(View.VISIBLE);
-            lvlOneScrollView = true;
-        }
-
-
-
-//        Toast.makeText(this, "Clicked on Adjustment Button", Toast.LENGTH_LONG).show();
-    }
-
-
-    public void onClickFilterBtn(View v)
-    {
-        HorizontalScrollView hsvFilters = (HorizontalScrollView) findViewById(R.id.hsv_filters);
-        if(hsvFilters.getVisibility() == View.VISIBLE)
-            hsvFilters.setVisibility(View.GONE);
-        else if(lvlOneScrollView) {
-            turnOffScrollView(1);
-            hsvFilters.setVisibility(View.VISIBLE);
-            lvlOneScrollView = true;
-        }
-        else{
-            hsvFilters.setVisibility(View.VISIBLE);
-            lvlOneScrollView = true;
-        }
-        //Toast.makeText(this, "Clicked on filter Button", Toast.LENGTH_LONG).show();
-    }
-
-
-    private void turnOffScrollView(int i) {
-        if(i==1)
-        {
-            for(HorizontalScrollView temp : scrollViewsLvlOne)
-                temp.setVisibility(View.GONE);
-            lvlOneScrollView = false;
-        }
-
-
-    }
-
-
-    */
+     * public void onClickAdjstmentBtn(View v)
+     * {
+     * HorizontalScrollView hsvAdjustments = (HorizontalScrollView) findViewById(R.id.hsv_adjustments);
+     * if(hsvAdjustments.getVisibility() == View.VISIBLE)
+     * hsvAdjustments.setVisibility(View.GONE);
+     * else if(lvlOneScrollView) {
+     * turnOffScrollView(1);
+     * hsvAdjustments.setVisibility(View.VISIBLE);
+     * lvlOneScrollView = true;
+     * }
+     * else{
+     * hsvAdjustments.setVisibility(View.VISIBLE);
+     * lvlOneScrollView = true;
+     * }
+     * <p/>
+     * <p/>
+     * <p/>
+     * //        Toast.makeText(this, "Clicked on Adjustment Button", Toast.LENGTH_LONG).show();
+     * }
+     * <p/>
+     * <p/>
+     * public void onClickFilterBtn(View v)
+     * {
+     * HorizontalScrollView hsvFilters = (HorizontalScrollView) findViewById(R.id.hsv_filters);
+     * if(hsvFilters.getVisibility() == View.VISIBLE)
+     * hsvFilters.setVisibility(View.GONE);
+     * else if(lvlOneScrollView) {
+     * turnOffScrollView(1);
+     * hsvFilters.setVisibility(View.VISIBLE);
+     * lvlOneScrollView = true;
+     * }
+     * else{
+     * hsvFilters.setVisibility(View.VISIBLE);
+     * lvlOneScrollView = true;
+     * }
+     * //Toast.makeText(this, "Clicked on filter Button", Toast.LENGTH_LONG).show();
+     * }
+     * <p/>
+     * <p/>
+     * private void turnOffScrollView(int i) {
+     * if(i==1)
+     * {
+     * for(HorizontalScrollView temp : scrollViewsLvlOne)
+     * temp.setVisibility(View.GONE);
+     * lvlOneScrollView = false;
+     * }
+     * <p/>
+     * <p/>
+     * }
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -283,8 +291,8 @@ public class PhotoEditor extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void toggleToolbox(View v){
-        Log.d("vince "+this.getLocalClassName()," image clicked and inside the toggleToolBox");
+    public void toggleToolbox(View v) {
+        Log.d("vince " + this.getLocalClassName(), " image clicked and inside the toggleToolBox");
 
         if (toolbox.getVisibility() == View.VISIBLE) {
             toolbox.setVisibility(View.GONE);
@@ -293,77 +301,309 @@ public class PhotoEditor extends AppCompatActivity {
         }
     }
 
-    public void onClickEffectButton(View view){
-        Log.d("vince "+this.getLocalClassName(),"Button at bottom is clicked.");
-        Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
+    public void onClickEffectButton(View view) {
+        Log.d("vince " + this.getLocalClassName(), "Button at bottom is clicked.");
+        Log.d("vince " + this.getLocalClassName(), "view name: " + view.getTag().toString());
 
         handleLevel1(view.getTag().toString());
     }
 
-    public void onClickFilterEffectButton(View view){
-        Log.d("vince "+this.getLocalClassName(),"Button at Filter Ribbon is clicked.");
-        Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
+    public void onClickFilterEffectButton(View view) {
+        Log.d("vince " + this.getLocalClassName(), "Button at Filter Ribbon is clicked.");
+        Log.d("vince " + this.getLocalClassName(), "filter name: " + view.getTag().toString());
+
+        handleFilter(view.getTag().toString());
+    }
+
+
+    public void onClickAdjButton(View view) {
+        Log.d("vince " + this.getLocalClassName(), "Button at Adjustment Ribbon is clicked.");
+        Log.d("vince " + this.getLocalClassName(), "adjustment name: " + view.getTag().toString());
 
         //handleLevel1(view.getTag().toString());
     }
 
+    private void handleFilter(String tag) {
+        //First convert Bitmap to Mat
+        Mat imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+        Bitmap myBitmap32 = logbitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Utils.bitmapToMat(myBitmap32, imageMat);
+        myBitmap32.recycle();
+        logbitmap = null;
 
-    public void onClickAdjButton(View view){
-        Log.d("vince "+this.getLocalClassName(),"Button at Adjustment Ribbon is clicked.");
-        Log.d("vince "+this.getLocalClassName(),"view name: "+view.getTag().toString());
+        try {
+            if (tag.equals("Sepia")) {
+                Log.d("vince", " Going to apply Sepia filter");
+                imageMat = filterSepia(imageMat);
+            }
+            else if (tag.equals("Monochrome")) {
+                Log.d("vince", " Going to apply monochrome filter");
+                imageMat = filterMonochrome(imageMat);
+            }
+            else if (tag.equals("HDR")) {
+                Log.d("vince", " Going to apply HDR filter");
+                imageMat = filterHdr(imageMat);
+            }
+            else if (tag.equals("Monocolor")) {
+                Log.d("vince", " Going to apply Unicolor filter");
+                imageMat = filterUnicolor(imageMat);
+            }
+            else if (tag.equals("Inverse")) {
+                Log.d("vince", " Going to apply Inverse filter");
+                imageMat = filterInverse(imageMat);
+            }
 
-        //handleLevel1(view.getTag().toString());
+            //Then convert the processed Mat to Bitmap
+            logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(imageMat, logbitmap);
+
+            //Set member to the resultBitmap. This member is displayed in an ImageView
+            ImageView imageView = (ImageView) findViewById(R.id.imgView);
+            imageView.setImageBitmap(logbitmap);
+
+        } catch (Exception exception) {
+            Toast.makeText(this, "Can't apply filter: " + tag, Toast.LENGTH_LONG).show();
+            exception.printStackTrace();
+        }
+
+        finally {
+            imageMat = null;
+            //myBitmap32.recycle();
+        }
+        //myBitmap32.recycle();
+
     }
 
+    private Mat filterSepia(Mat imageMat) {
+
+        Mat mSepiaKernel = new Mat(4, 4, CvType.CV_32F);
+        mSepiaKernel.put(0, 0, 0.272f, 0.534f, 0.131f, 0f);
+        mSepiaKernel.put(1, 0, 0.349f, 0.686f, 0.168f, 0f);
+        mSepiaKernel.put(2, 0, 0.393f, 0.769f, 0.189f, 0f);
+        mSepiaKernel.put(3, 0, 0.000f, 0.000f, 0.000f, 1f);
+/*
+        Mat mSepiaKernel = new Mat(3, 3, CvType.CV_32F);
+        mSepiaKernel.put(0, 0, 0.393f, 0.349f, 0.272f);
+        mSepiaKernel.put(1, 0, 0.769f, 0.686f, 0.534f);
+        mSepiaKernel.put(2, 0, 0.189f, 0.168f, 0.131f);*/
+
+        Core.transform(imageMat, imageMat, mSepiaKernel);
+
+        mSepiaKernel  = null;
+        return imageMat;
+    }
+
+    private Mat filterHdr(Mat imageMat) {
+        ArrayList<Mat> channels = new ArrayList<Mat>();
+        Core.split(imageMat, channels);
+        Mat tempMat = null;
+        int i= 0;
+        for(i= 0 ; i < 3 ; i++){
+        tempMat = new Mat(imageMat.rows(), imageMat.cols(), CvType.CV_8U, new Scalar(4));
+        Imgproc.equalizeHist(channels.get(i), tempMat);
+        channels.set(i, tempMat);
+        }
+        Core.merge(channels,imageMat);
+        channels = null;
+        tempMat = null;
+        return imageMat;
+    }
+
+    private Mat filterUnicolor(Mat imageMat) {
+        /*Size s = new Size(3,3);
+        Imgproc.GaussianBlur(imageMat, imageMat, s, 2);*/
+        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2HSV, 4);
+        return imageMat;
+    }
+
+    private Mat filterInverse(Mat imageMat) {
+        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY, 4);
+        Core.bitwise_not(imageMat, imageMat);
+        return imageMat;
+    }
+
+    private Mat filterMonochrome(Mat imageMat) {
+        //convert RGB to Grayscale
+        Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2GRAY, 4);
+        return imageMat;
+    }
 
     private void handleLevel1(String tag) {
 
         // TODO: check whether the tag is valid or not.
         // doing the dirty way of just applying the effect without checking
 
-        if(tag.equals("Adjustments")){
+        if (tag.equals("Adjustments")) {
             //DONE: Take every ribbon other than adjustments and make invisible
             makeOtherRibbonGone("Adjustments");
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder2);
-            if(adjustPop.getVisibility()==View.VISIBLE){
+            if (adjustPop.getVisibility() == View.VISIBLE) {
                 adjustPop.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 adjustPop.setVisibility(View.VISIBLE);
             }
 
-        }
-
-        else if(tag.equals("Filters")){
+        } else if (tag.equals("Filters")) {
             //DONE: Take every ribbon other than filter and make invisible
             makeOtherRibbonGone("Filters");
             LinearLayout adjustPop = (LinearLayout) findViewById(R.id.effects_holder3);
-            if(adjustPop==null){
-                Log.d("vince "+this.getLocalClassName()," adjustPop is null");
+            if (adjustPop == null) {
+                Log.d("vince " + this.getLocalClassName(), " adjustPop is null");
                 return;
             }
-            if(adjustPop.getVisibility()==View.VISIBLE){
+            if (adjustPop.getVisibility() == View.VISIBLE) {
                 adjustPop.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 adjustPop.setVisibility(View.VISIBLE);
             }
-        }
+        } else if (tag.equals("AgeGender")) {
+            Log.d("vince", " Going to detect the age and gender");
+            //Frame(logbitmap);
+            FaceppDetect faceppDetect = new FaceppDetect();
+            faceppDetect.setDetectCallback(new DetectCallback() {
 
-        else if(tag.equals("AgeGender")){
-            Log.d("vince"," Going to detect the age and gender");
-            detectAndFrame(logbitmap);
+                public void detectResult(JSONObject rst) {
+                    //Log.v(TAG, rst.toString());
+
+                    Log.v("My result", rst.toString());
+
+                    //use the red paint
+                    //Paint paint = new Paint();
+                    //paint.setColor(Color.RED);
+                    //paint.setStrokeWidth(Math.max(logbitmap.getWidth(), logbitmap.getHeight()) / 100f);
+
+                    //Paint textPaint = new Paint();
+                    //textPaint.setColor(Color.YELLOW);
+                    //textPaint.setStrokeWidth(Math.max(logbitmap.getWidth(), logbitmap.getHeight()) / 100f);
+                    //textPaint.setTextSize(50F);
+
+                    //create a new canvas
+                    //Bitmap bitmap = Bitmap.createBitmap(logbitmap.getWidth(), logbitmap.getHeight(), logbitmap.getConfig());
+                    //Canvas canvas = new Canvas(bitmap);
+                    //canvas.drawBitmap(logbitmap, new android.graphics.Matrix(), null);
+
+
+                    try {
+                        //find out all faces
+                        final int count = rst.getJSONArray("face").length();
+                        final Face[] faces = new Face[count];
+                        for (int i = 0; i < count; ++i) {
+                            faces[i] = new Face();
+                            faces[i].attributes= new FaceAttribute();
+                            faces[i].faceRectangle = new FaceRectangle();
+                            float x, y, w, h;
+                            //get the center point
+                            x = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getJSONObject("center").getDouble("x");
+                            y = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getJSONObject("center").getDouble("y");
+
+                            //get face size
+                            w = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getDouble("width");
+                            h = (float)rst.getJSONArray("face").getJSONObject(i)
+                                    .getJSONObject("position").getDouble("height");
+
+                            //change percent value to the real size
+                            x = x / 100 * logbitmap.getWidth();
+                            w = w / 100 * logbitmap.getWidth() * 0.7f;
+                            y = y / 100 * logbitmap.getHeight();
+                            h = h / 100 * logbitmap.getHeight() * 0.7f;
+
+                            //Log.v("Dimensions","X = "+x+" W = "+w+" Y = "+y+" H = "+h);
+
+                            //draw the box to mark it out
+                            //canvas.drawLine(x - w, y - h, x - w, y + h, paint);
+                            //canvas.drawLine(x - w, y - h, x + w, y - h, paint);
+                            //canvas.drawLine(x + w, y + h, x - w, y + h, paint);
+                            //canvas.drawLine(x + w, y + h, x + w, y - h, paint);
+
+                            String gender = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("gender").getString("value");
+                            double genderConfidence = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("gender").getDouble("confidence");
+
+                            if(faces[i]==null)
+                                Log.d("vince","faces[i] is mull");
+                            if(faces[i].attributes==null)
+                                Log.d("vince","faces[i].attributes==null");
+
+                            if(gender.equals("Male"))
+                                faces[i].attributes.gender = GenderEnum.male;
+                            else
+                                faces[i].attributes.gender = GenderEnum.female;
+
+                            String age = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getString("value");
+                            int range = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("age").getInt("range");
+
+
+                            // vinceVasu
+                            faces[i].faceRectangle.height = (int) h*2;
+                            faces[i].faceRectangle.width = (int) w*2;
+                            faces[i].faceRectangle.left = (int)  (x-w);
+                            faces[i].faceRectangle.top = (int) (y-h);
+
+                            faces[i].attributes.age = Double.valueOf(age);
+
+
+
+                            String displayText = gender+"/"+age+"(+-"+range+")";
+
+                            //float textX = (float)rst.getJSONArray("face").getJSONObject(i).getJSONObject("position").getJSONObject("center").getDouble("x");
+                            //float textY = (float)rst.getJSONArray("face").getJSONObject(i).getJSONObject("position").getJSONObject("center").getDouble("y");
+
+                            //float xCoord = textX;
+                            //float yCoord = textY;
+
+                            float fontSize = w*h*0.02F;
+                            if(fontSize>50F)
+                                fontSize = 50F;
+                            else if(fontSize<25F)
+                                fontSize = 25F;
+
+                            //textPaint.setTextSize(fontSize);
+
+                            if(pos) {
+                                //canvas.drawText(displayText, x - w, y - h, textPaint);
+                                pos = false;
+                            }
+                            else {
+                                //canvas.drawText(displayText,x-w,y+h,textPaint);
+                                pos = true;
+                            }
+                        }
+
+                        //save new image
+
+                        //logbitmap = bitmap;
+
+                        PhotoEditor.this.runOnUiThread(new Runnable() {
+
+                            public void run() {
+                                //show the image
+                                //vincentVasu
+                                ImageView imageView = (ImageView) findViewById(R.id.imgView);
+                                imageView.setImageBitmap(drawFaceRectanglesOnBitmap(logbitmap, faces));
+                            }
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        ;
+                    }
+
+                }
+            });
+            faceppDetect.detect(logbitmap);
 
         }
     }
 
     private void makeOtherRibbonGone(String ribbonName) {
-        HashMap<String,Integer> hm = new HashMap<>();
-        hm.put("Adjustments",R.id.effects_holder2);
-        hm.put("Filters",R.id.effects_holder3);
+        HashMap<String, Integer> hm = new HashMap<>();
+        hm.put("Adjustments", R.id.effects_holder2);
+        hm.put("Filters", R.id.effects_holder3);
 
-        for(String key:hm.keySet()){
-            if(key.equalsIgnoreCase(ribbonName)){
+        for (String key : hm.keySet()) {
+            if (key.equalsIgnoreCase(ribbonName)) {
                 continue;
             }
 
@@ -374,7 +614,51 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
 
+    }
 
+    private class FaceppDetect {
+        DetectCallback callback = null;
 
+        public void setDetectCallback(DetectCallback detectCallback) {
+            callback = detectCallback;
+        }
+
+        public void detect(final Bitmap image) {
+
+            new Thread(new Runnable() {
+
+                public void run() {
+                    HttpRequests httpRequests = new HttpRequests("36d55d5e02d03582b677b42365073fa8", "KY_k9ldTUw0WgQ-rBAxFPvhztMQhLnOD", true, false);
+                    //Log.v(TAG, "image size : " + img.getWidth() + " " + img.getHeight());
+
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    float scale = Math.min(1, Math.min(600f / logbitmap.getWidth(), 600f / logbitmap.getHeight()));
+                    android.graphics.Matrix matrix = new Matrix();
+                    matrix.postScale(scale, scale);
+
+                    Bitmap imgSmall = Bitmap.createBitmap(logbitmap, 0, 0, logbitmap.getWidth(), logbitmap.getHeight(), matrix, false);
+                    //Log.v(TAG, "imgSmall size : " + imgSmall.getWidth() + " " + imgSmall.getHeight());
+
+                    imgSmall.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+                    byte[] array = stream.toByteArray();
+
+                    try {
+                        //detect
+                        JSONObject result = httpRequests.detectionDetect(new PostParameters().setImg(array));
+                        //finished , then call the callback function
+                        if (callback != null) {
+                            callback.detectResult(result);
+                        }
+                    } catch (FaceppParseException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }).start();
+        }
+    }
+
+    interface DetectCallback {
+        void detectResult(JSONObject rst);
     }
 }
