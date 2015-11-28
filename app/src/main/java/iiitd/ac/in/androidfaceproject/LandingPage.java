@@ -1,6 +1,7 @@
 package iiitd.ac.in.androidfaceproject;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -27,7 +28,7 @@ public class LandingPage extends AppCompatActivity {
     File destination;
     Uri selectedImage;
     public static String selectedPath1 = "NONE";
-    private static final int PICK_Camera_IMAGE = 2;
+    private static final int PICK_Camera_IMAGE = 1235;
     private static final int SELECT_FILE1 = 1;
     public static Bitmap bmpScale;
     public static String imagePath;
@@ -76,9 +77,17 @@ public class LandingPage extends AppCompatActivity {
                 String reportDate = time + "";
 
                 destination = new File(Environment
-                        .getExternalStorageDirectory(), reportDate + ".jpg");
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), reportDate + ".jpg");
                 Log.d("vincent", "destination: " + destination.toString());
                 Log.d("vincent", "destination: " + destination.getAbsolutePath());
+
+                ContentValues values = new ContentValues();
+
+                values.put(MediaStore.Images.Media.DATE_TAKEN, reportDate);
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                values.put(MediaStore.MediaColumns.DATA, destination.toString());
+
+                getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT,
@@ -174,6 +183,14 @@ public class LandingPage extends AppCompatActivity {
                     startActivity(intent);
                     //Bitmap yourSelectedImage = BitmapFactory.decodeFile(filePath);
             /* Now you have choosen image in Bitmap format in object "yourSelectedImage". You can use it in way you want! */
+                }
+
+                break;
+            case 1235:
+                if (resultCode == RESULT_OK) {
+                    Intent intent = new Intent(this, PhotoEditor.class);
+                    intent.putExtra("filename", destination.toString());
+                    startActivity(intent);
                 }
         }
 
