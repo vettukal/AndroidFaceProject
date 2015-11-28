@@ -62,6 +62,7 @@
 
             />
 
+
         <include layout="@layout/holder_filters" />
 
     </RelativeLayout>

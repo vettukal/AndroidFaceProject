@@ -1,13 +1,20 @@
 package iiitd.ac.in.androidfaceproject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.graphics.*;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +24,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.facepp.error.FaceppParseException;
@@ -56,6 +64,12 @@ public class PhotoEditor extends AppCompatActivity {
     static float fontSize = 0;
     HorizontalScrollView[] scrollViewsLvlOne;
     HorizontalScrollView[] scrollViewsLvlTwo;
+    float discrete=0;
+    float start=0;
+    float end=100;
+    float start_pos=0;
+    int start_position=0;
+
 
     private RelativeLayout toolbox;
 
@@ -184,6 +198,7 @@ public class PhotoEditor extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_editor);
 
+
         toolbox = (RelativeLayout) findViewById(R.id.toolbox);
         ImageView tv1;
         //tv1.setImageResource(R.id.imageButtonCamera);
@@ -201,12 +216,6 @@ public class PhotoEditor extends AppCompatActivity {
 
         File destination = new File(Environment
                 .getExternalStorageDirectory(), "1445871154448" + ".jpg");
-        //imageFile = destination;
-
-        /**
-         scrollViewsLvlOne = new HorizontalScrollView [] {(HorizontalScrollView) findViewById(R.id.hsv_filters),
-         (HorizontalScrollView) findViewById(R.id.hsv_adjustments)};
-         */
         if (imageFile.exists()) {
             Log.d("vincent", "image file exists");
             Toast.makeText(this, "image file exists", Toast.LENGTH_LONG).show();
@@ -230,58 +239,6 @@ public class PhotoEditor extends AppCompatActivity {
         }
         detectionProgressDialog = new ProgressDialog(this);
     }
-
-    /**
-     * public void onClickAdjstmentBtn(View v)
-     * {
-     * HorizontalScrollView hsvAdjustments = (HorizontalScrollView) findViewById(R.id.hsv_adjustments);
-     * if(hsvAdjustments.getVisibility() == View.VISIBLE)
-     * hsvAdjustments.setVisibility(View.GONE);
-     * else if(lvlOneScrollView) {
-     * turnOffScrollView(1);
-     * hsvAdjustments.setVisibility(View.VISIBLE);
-     * lvlOneScrollView = true;
-     * }
-     * else{
-     * hsvAdjustments.setVisibility(View.VISIBLE);
-     * lvlOneScrollView = true;
-     * }
-     * <p/>
-     * <p/>
-     * <p/>
-     * //        Toast.makeText(this, "Clicked on Adjustment Button", Toast.LENGTH_LONG).show();
-     * }
-     * <p/>
-     * <p/>
-     * public void onClickFilterBtn(View v)
-     * {
-     * HorizontalScrollView hsvFilters = (HorizontalScrollView) findViewById(R.id.hsv_filters);
-     * if(hsvFilters.getVisibility() == View.VISIBLE)
-     * hsvFilters.setVisibility(View.GONE);
-     * else if(lvlOneScrollView) {
-     * turnOffScrollView(1);
-     * hsvFilters.setVisibility(View.VISIBLE);
-     * lvlOneScrollView = true;
-     * }
-     * else{
-     * hsvFilters.setVisibility(View.VISIBLE);
-     * lvlOneScrollView = true;
-     * }
-     * //Toast.makeText(this, "Clicked on filter Button", Toast.LENGTH_LONG).show();
-     * }
-     * <p/>
-     * <p/>
-     * private void turnOffScrollView(int i) {
-     * if(i==1)
-     * {
-     * for(HorizontalScrollView temp : scrollViewsLvlOne)
-     * temp.setVisibility(View.GONE);
-     * lvlOneScrollView = false;
-     * }
-     * <p/>
-     * <p/>
-     * }
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -333,7 +290,22 @@ public class PhotoEditor extends AppCompatActivity {
         Log.d("vince " + this.getLocalClassName(), "Button at Adjustment Ribbon is clicked.");
         Log.d("vince " + this.getLocalClassName(), "adjustment name: " + view.getTag().toString());
 
-        //handleLevel1(view.getTag().toString());
+        handleAdjustment(view.getTag().toString());
+    }
+
+    private void handleAdjustment(String tag) {
+
+        if(tag.equals("Brightness")) {
+            showBrightnessDialog();
+        }
+        else if (tag.equals("Contrast")) {
+            showContrastDialog();
+        }
+        else if (tag.equals("Color")) {
+            showColorDialog();
+        }
+
+
     }
 
     private void handleFilter(String tag) {
@@ -387,6 +359,128 @@ public class PhotoEditor extends AppCompatActivity {
 
     }
 
+    protected void showBrightnessDialog() {
+
+        //set seekbar properties
+        start=-10;		//you need to give starting value of SeekBar
+        end=10;			//you need to give end value of SeekBar
+        start_pos=0;		//you need to give starting position value of SeekBar
+
+        start_position=(int) (((start_pos-start)/(end-start))*100);
+        discrete = start_pos;
+
+
+
+
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.brightness_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setView(promptView);
+
+        SeekBar seek=(SeekBar) promptView.findViewById(R.id.seekBar1);
+        seek.setProgress(start_position);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
+
+    protected void showContrastDialog() {
+
+        //set seekbar properties
+        start=-10;		//you need to give starting value of SeekBar
+        end=10;			//you need to give end value of SeekBar
+        start_pos=0;		//you need to give starting position value of SeekBar
+
+        start_position=(int) (((start_pos-start)/(end-start))*100);
+        discrete = start_pos;
+
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.contrast_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setView(promptView);
+
+        SeekBar seek=(SeekBar) promptView.findViewById(R.id.seekBar2);
+        seek.setProgress(start_position);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+
+    }
+
+    protected void showColorDialog() {
+
+        //set seekbar properties
+        start=-0;		//you need to give starting value of SeekBar
+        end=255;			//you need to give end value of SeekBar
+        start_pos=125;		//you need to give starting position value of SeekBar
+
+        int start_position_red=(int) (((start_pos-start)/(end-start))*100);
+        int start_position_green=(int) (((start_pos-start)/(end-start))*100);
+        int start_position_blue=(int) (((start_pos-start)/(end-start))*100);
+        discrete = start_pos;
+
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View promptView = layoutInflater.inflate(R.layout.color_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setView(promptView);
+
+        SeekBar seek1=(SeekBar) promptView.findViewById(R.id.seekBar3);
+        SeekBar seek2=(SeekBar) promptView.findViewById(R.id.seekBar4);
+        SeekBar seek3=(SeekBar) promptView.findViewById(R.id.seekBar5);
+
+        seek1.setProgress(start_position_red);
+        seek2.setProgress(start_position_green);
+        seek3.setProgress(start_position_blue);
+
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+
+    }
+
     private Mat filterSepia(Mat imageMat) {
 
         Mat mSepiaKernel = new Mat(4, 4, CvType.CV_32F);
@@ -394,12 +488,6 @@ public class PhotoEditor extends AppCompatActivity {
         mSepiaKernel.put(1, 0, 0.349f, 0.686f, 0.168f, 0f);
         mSepiaKernel.put(2, 0, 0.393f, 0.769f, 0.189f, 0f);
         mSepiaKernel.put(3, 0, 0.000f, 0.000f, 0.000f, 1f);
-/*
-        Mat mSepiaKernel = new Mat(3, 3, CvType.CV_32F);
-        mSepiaKernel.put(0, 0, 0.393f, 0.349f, 0.272f);
-        mSepiaKernel.put(1, 0, 0.769f, 0.686f, 0.534f);
-        mSepiaKernel.put(2, 0, 0.189f, 0.168f, 0.131f);*/
-
         Core.transform(imageMat, imageMat, mSepiaKernel);
 
         mSepiaKernel  = null;
@@ -423,8 +511,6 @@ public class PhotoEditor extends AppCompatActivity {
     }
 
     private Mat filterUnicolor(Mat imageMat) {
-        /*Size s = new Size(3,3);
-        Imgproc.GaussianBlur(imageMat, imageMat, s, 2);*/
         Imgproc.cvtColor(imageMat, imageMat, Imgproc.COLOR_RGB2HSV, 4);
         return imageMat;
     }
@@ -480,22 +566,6 @@ public class PhotoEditor extends AppCompatActivity {
 
                     Log.v("My result", rst.toString());
 
-                    //use the red paint
-                    //Paint paint = new Paint();
-                    //paint.setColor(Color.RED);
-                    //paint.setStrokeWidth(Math.max(logbitmap.getWidth(), logbitmap.getHeight()) / 100f);
-
-                    //Paint textPaint = new Paint();
-                    //textPaint.setColor(Color.YELLOW);
-                    //textPaint.setStrokeWidth(Math.max(logbitmap.getWidth(), logbitmap.getHeight()) / 100f);
-                    //textPaint.setTextSize(50F);
-
-                    //create a new canvas
-                    //Bitmap bitmap = Bitmap.createBitmap(logbitmap.getWidth(), logbitmap.getHeight(), logbitmap.getConfig());
-                    //Canvas canvas = new Canvas(bitmap);
-                    //canvas.drawBitmap(logbitmap, new android.graphics.Matrix(), null);
-
-
                     try {
                         //find out all faces
                         final int count = rst.getJSONArray("face").length();
@@ -522,14 +592,6 @@ public class PhotoEditor extends AppCompatActivity {
                             w = w / 100 * logbitmap.getWidth() * 0.7f;
                             y = y / 100 * logbitmap.getHeight();
                             h = h / 100 * logbitmap.getHeight() * 0.7f;
-
-                            //Log.v("Dimensions","X = "+x+" W = "+w+" Y = "+y+" H = "+h);
-
-                            //draw the box to mark it out
-                            //canvas.drawLine(x - w, y - h, x - w, y + h, paint);
-                            //canvas.drawLine(x - w, y - h, x + w, y - h, paint);
-                            //canvas.drawLine(x + w, y + h, x - w, y + h, paint);
-                            //canvas.drawLine(x + w, y + h, x + w, y - h, paint);
 
                             String gender = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("gender").getString("value");
                             double genderConfidence = rst.getJSONArray("face").getJSONObject(i).getJSONObject("attribute").getJSONObject("gender").getDouble("confidence");
@@ -560,12 +622,6 @@ public class PhotoEditor extends AppCompatActivity {
 
                             String displayText = gender+"/"+age+"(+-"+range+")";
 
-                            //float textX = (float)rst.getJSONArray("face").getJSONObject(i).getJSONObject("position").getJSONObject("center").getDouble("x");
-                            //float textY = (float)rst.getJSONArray("face").getJSONObject(i).getJSONObject("position").getJSONObject("center").getDouble("y");
-
-                            //float xCoord = textX;
-                            //float yCoord = textY;
-
                             fontSize = w*h*0.02F;
                             if(fontSize>50F)
                                 fontSize = 50F;
@@ -574,10 +630,6 @@ public class PhotoEditor extends AppCompatActivity {
 
                             //textPaint.setTextSize(fontSize);
                         }
-
-                        //save new image
-
-                        //logbitmap = bitmap;
 
                         PhotoEditor.this.runOnUiThread(new Runnable() {
 
