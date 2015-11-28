@@ -69,7 +69,8 @@ public class PhotoEditor extends AppCompatActivity {
     float end=100;
     float start_pos=0;
     int start_position=0;
-
+    double brightnessValue, contrastValue, rgbValue[];
+    Mat imageMat;
 
     private RelativeLayout toolbox;
 
@@ -81,6 +82,7 @@ public class PhotoEditor extends AppCompatActivity {
 
     Bitmap logbitmap;
     static int range = 0;
+
 
     // Detect faces by uploading face images
 // Frame faces after detection
@@ -285,32 +287,9 @@ public class PhotoEditor extends AppCompatActivity {
         handleFilter(view.getTag().toString());
     }
 
-
-    public void onClickAdjButton(View view) {
-        Log.d("vince " + this.getLocalClassName(), "Button at Adjustment Ribbon is clicked.");
-        Log.d("vince " + this.getLocalClassName(), "adjustment name: " + view.getTag().toString());
-
-        handleAdjustment(view.getTag().toString());
-    }
-
-    private void handleAdjustment(String tag) {
-
-        if(tag.equals("Brightness")) {
-            showBrightnessDialog();
-        }
-        else if (tag.equals("Contrast")) {
-            showContrastDialog();
-        }
-        else if (tag.equals("Color")) {
-            showColorDialog();
-        }
-
-
-    }
-
     private void handleFilter(String tag) {
         //First convert Bitmap to Mat
-        Mat imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+        imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
         Bitmap myBitmap32 = logbitmap.copy(Bitmap.Config.ARGB_8888, true);
         Utils.bitmapToMat(myBitmap32, imageMat);
         myBitmap32.recycle();
@@ -359,7 +338,42 @@ public class PhotoEditor extends AppCompatActivity {
 
     }
 
-    protected void showBrightnessDialog() {
+
+
+    public void onClickAdjButton(View view) {
+        Log.d("vince " + this.getLocalClassName(), "Button at Adjustment Ribbon is clicked.");
+        Log.d("vince " + this.getLocalClassName(), "adjustment name: " + view.getTag().toString());
+
+        handleAdjustment(view.getTag().toString());
+    }
+
+    private void handleAdjustment(String tag) {
+        //First convert Bitmap to Mat
+
+        try {
+        if(tag.equals("Brightness")) {
+           double brightness = showBrightnessDialog();
+        }
+        else if (tag.equals("Contrast")) {
+            double contrast = showContrastDialog();
+            Log.d("vince " + contrast +"--"+ contrastValue, "Contrast value returned");
+        }
+        else if (tag.equals("Color")) {
+            double[] rgb = showColorDialog();
+
+        }
+
+        } catch (Exception exception) {
+            Toast.makeText(this, "Can't apply filter: " + tag, Toast.LENGTH_LONG).show();
+            exception.printStackTrace();
+        }
+
+
+    }
+
+
+//----------------------------------------------------------------------------------------------------------------------------Brightness Dialog --------------------------
+    protected double showBrightnessDialog() {
 
         //set seekbar properties
         start=-10;		//you need to give starting value of SeekBar
@@ -369,21 +383,28 @@ public class PhotoEditor extends AppCompatActivity {
         start_position=(int) (((start_pos-start)/(end-start))*100);
         discrete = start_pos;
 
-
-
-
         // get prompts.xml view
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View promptView = layoutInflater.inflate(R.layout.brightness_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setView(promptView);
 
-        SeekBar seek=(SeekBar) promptView.findViewById(R.id.seekBar1);
+        final SeekBar seek=(SeekBar) promptView.findViewById(R.id.seekBar1);
         seek.setProgress(start_position);
-        // setup a dialog window
+
+    // setup a dialog window
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        brightnessValue = seek.getProgress();
+                        double factor = brightnessValue/50;
+                        Log.d("vince " + brightnessValue, "Brightness value ");
+                        Log.d("vince " + factor, "Brightness factor ");
+
+                        //changeBrightness(Math.abs((factor - 1) * 255));
+                        changeBrightness(factor);
+
+                        dialog.dismiss();
                     }
                 })
                 .setNegativeButton("Cancel",
@@ -396,15 +417,17 @@ public class PhotoEditor extends AppCompatActivity {
         // create an alert dialog
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+
+        return brightnessValue;
     }
 
 
-    protected void showContrastDialog() {
+    protected double showContrastDialog() {
 
         //set seekbar properties
-        start=-10;		//you need to give starting value of SeekBar
+        start=0;		//you need to give starting value of SeekBar
         end=10;			//you need to give end value of SeekBar
-        start_pos=0;		//you need to give starting position value of SeekBar
+        start_pos=5;		//you need to give starting position value of SeekBar
 
         start_position=(int) (((start_pos-start)/(end-start))*100);
         discrete = start_pos;
@@ -415,12 +438,17 @@ public class PhotoEditor extends AppCompatActivity {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setView(promptView);
 
-        SeekBar seek=(SeekBar) promptView.findViewById(R.id.seekBar2);
+        final SeekBar seek=(SeekBar) promptView.findViewById(R.id.seekBar2);
         seek.setProgress(start_position);
         // setup a dialog window
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        contrastValue = seek.getProgress();
+                        double factor = contrastValue/50;
+                        Log.d("vince " + contrastValue, "Contrast value ");
+                        Log.d("vince " + factor, "Contrast factor ");
+                        changeContrast(factor);
                     }
                 })
                 .setNegativeButton("Cancel",
@@ -434,14 +462,16 @@ public class PhotoEditor extends AppCompatActivity {
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
 
+        return contrastValue;
+
     }
 
-    protected void showColorDialog() {
+    protected double[] showColorDialog() {
 
         //set seekbar properties
         start=-0;		//you need to give starting value of SeekBar
-        end=255;			//you need to give end value of SeekBar
-        start_pos=125;		//you need to give starting position value of SeekBar
+        end=10;			//you need to give end value of SeekBar
+        start_pos=5;		//you need to give starting position value of SeekBar
 
         int start_position_red=(int) (((start_pos-start)/(end-start))*100);
         int start_position_green=(int) (((start_pos-start)/(end-start))*100);
@@ -454,9 +484,9 @@ public class PhotoEditor extends AppCompatActivity {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setView(promptView);
 
-        SeekBar seek1=(SeekBar) promptView.findViewById(R.id.seekBar3);
-        SeekBar seek2=(SeekBar) promptView.findViewById(R.id.seekBar4);
-        SeekBar seek3=(SeekBar) promptView.findViewById(R.id.seekBar5);
+        final SeekBar seek1=(SeekBar) promptView.findViewById(R.id.seekBar3);
+        final SeekBar seek2=(SeekBar) promptView.findViewById(R.id.seekBar4);
+        final SeekBar seek3=(SeekBar) promptView.findViewById(R.id.seekBar5);
 
         seek1.setProgress(start_position_red);
         seek2.setProgress(start_position_green);
@@ -466,6 +496,11 @@ public class PhotoEditor extends AppCompatActivity {
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        double redVal = seek1.getProgress();
+                        double greenVal = seek2.getProgress();
+                        double blueVal = seek3.getProgress();
+                        rgbValue = new double[]{redVal/50,greenVal/50,blueVal/50};
+                        changeColor(rgbValue);
                     }
                 })
                 .setNegativeButton("Cancel",
@@ -478,7 +513,7 @@ public class PhotoEditor extends AppCompatActivity {
         // create an alert dialog
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
-
+        return new double[]{seek1.getProgress(),seek2.getProgress(),seek3.getProgress()};
     }
 
     private Mat filterSepia(Mat imageMat) {
@@ -504,7 +539,7 @@ public class PhotoEditor extends AppCompatActivity {
         Imgproc.equalizeHist(channels.get(i), tempMat);
         channels.set(i, tempMat);
         }
-        Core.merge(channels,imageMat);
+        Core.merge(channels, imageMat);
         channels = null;
         tempMat = null;
         return imageMat;
@@ -670,6 +705,81 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
 
+    }
+
+    public void changeBrightness(double factor){
+        imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+        Bitmap myBitmap32 = logbitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Utils.bitmapToMat(myBitmap32, imageMat);
+        myBitmap32.recycle();
+        myBitmap32 = null;
+        logbitmap = null;
+
+        Log.d("vince", (float) factor + " Going to brighten the image");
+
+        Mat mBrightnessKernel = new Mat(4, 4, CvType.CV_32F);
+        mBrightnessKernel.put(0, 0, (float)factor, 0.000f,  0.000f, 0f);
+        mBrightnessKernel.put(1, 0, 0.000f, (float)factor,  0.000f, 0f);
+        mBrightnessKernel.put(2, 0, 0.000f, 0.000f,  (float)factor, 0f);
+        mBrightnessKernel.put(3, 0, 0.000f, 0.000f, 0.000f, 1f);
+
+        Core.transform(imageMat, imageMat, mBrightnessKernel);
+
+        logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(imageMat, logbitmap);
+
+        //Set member to the resultBitmap. This member is displayed in an ImageView
+        ImageView imageView = (ImageView) findViewById(R.id.imgView);
+        imageView.setImageBitmap(logbitmap);
+        imageMat = null;
+    }
+
+
+    public void changeContrast(double factor){
+        imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+        Bitmap myBitmap32 = logbitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Utils.bitmapToMat(myBitmap32, imageMat);
+        myBitmap32.recycle();
+        myBitmap32 = null;
+        logbitmap = null;
+
+        imageMat.convertTo(imageMat, -1, factor, 0); //adjust the contrast (double)
+
+
+        logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(imageMat, logbitmap);
+
+        //Set member to the resultBitmap. This member is displayed in an ImageView
+        ImageView imageView = (ImageView) findViewById(R.id.imgView);
+        imageView.setImageBitmap(logbitmap);
+        imageMat = null;
+    }
+
+
+    public void changeColor(double factor[]){
+        imageMat = new Mat(logbitmap.getHeight(), logbitmap.getWidth(), CvType.CV_8U, new Scalar(4));
+        Bitmap myBitmap32 = logbitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Utils.bitmapToMat(myBitmap32, imageMat);
+        myBitmap32.recycle();
+        myBitmap32 = null;
+        logbitmap = null;
+
+
+        Mat mBrightnessKernel = new Mat(4, 4, CvType.CV_32F);
+        mBrightnessKernel.put(0, 0, (float) factor[0], 0.000f, 0.000f, 0f);
+        mBrightnessKernel.put(1, 0, 0.000f, (float) factor[1], 0.000f, 0f);
+        mBrightnessKernel.put(2, 0, 0.000f, 0.000f,  (float)factor[2], 0f);
+        mBrightnessKernel.put(3, 0, 0.000f, 0.000f, 0.000f, 1f);
+
+        Core.transform(imageMat, imageMat, mBrightnessKernel);
+
+        logbitmap = Bitmap.createBitmap(imageMat.cols(), imageMat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(imageMat, logbitmap);
+
+        //Set member to the resultBitmap. This member is displayed in an ImageView
+        ImageView imageView = (ImageView) findViewById(R.id.imgView);
+        imageView.setImageBitmap(logbitmap);
+        imageMat = null;
     }
 
     private class FaceppDetect {
