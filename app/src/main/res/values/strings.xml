@@ -70,6 +70,8 @@
     <string name="title_activity_fblogin">fblogin</string>
     <string name="facebook_app_id">1655217564755303</string>
     <string name="color_dialog_title">Adjust Color</string>
+    <string name="logout">LogOut</string>
+    <string name="title_activity_my_intro">MyIntro</string>
 
 </resources>
 

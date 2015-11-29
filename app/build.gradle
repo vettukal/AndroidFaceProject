@@ -39,6 +39,7 @@ dependencies {
     //compile 'com.getbase.floatingactionbuttion:1.9.1'
     compile 'com.android.support:design:23.0.1'
     compile project(':openCVLibrary300')
+    compile 'com.github.paolorotolo:appintro:3.3.0'
 
 }
 
@@ -46,4 +47,7 @@ repositories {
     maven {
         url "https://jitpack.io"
     }
+}
+dependencies {
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }

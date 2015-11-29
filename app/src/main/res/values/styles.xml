@@ -5,6 +5,7 @@
         <!-- Customize your theme here. -->
 
     </style>
+
     <style name="title_bar">
         <item name="android:textColor">#d9f3ff</item>
         <item name="android:textSize">22sp</item>
@@ -18,5 +19,9 @@
     <style name="MyTheme" parent="android:Theme">
         <item name="android:panelFullBackground">#000000</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>
