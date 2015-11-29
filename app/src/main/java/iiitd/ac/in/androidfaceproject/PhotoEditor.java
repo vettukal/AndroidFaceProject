@@ -2,16 +2,21 @@ package iiitd.ac.in.androidfaceproject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -73,7 +78,7 @@ public class PhotoEditor extends AppCompatActivity {
     int start_position=0;
     double brightnessValue, contrastValue, rgbValue[];
     Mat imageMat;
-
+    final int PIC_CROP = 1;
     private RelativeLayout toolbox;
 
     private final int PICK_IMAGE = 1;
@@ -251,6 +256,35 @@ public class PhotoEditor extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try {
+            if (requestCode == PIC_CROP) {
+                if (data != null) {
+                    Toast.makeText(this, "Croped Image Saved in Gallery", Toast.LENGTH_LONG).show();
+
+                    // get the returned data
+                    /*Uri uri = data.getData();
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+                    ImageView imageView = (ImageView) findViewById(R.id.imgView);
+                    imageView.setImageBitmap(bitmap);
+                    bitmap.recycle();
+                    bitmap = null;
+                    data = null*/;
+                }
+            }
+        }
+        catch(Exception e){
+            Toast.makeText(this, "Crop Operation Failed", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -367,6 +401,49 @@ public class PhotoEditor extends AppCompatActivity {
                 autoFix();
         }
         else if (tag.equals("Crop"))  {
+            //ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            //logbitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            //String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), logbitmap, "Title", null);
+            Uri picUri = getImageUri(this,logbitmap);
+
+            try {
+                Intent cropIntent = new Intent("com.android.camera.action.CROP");
+                // indicate image type and Uri
+                cropIntent.setDataAndType(picUri, "image/*");
+                // set crop properties
+                cropIntent.putExtra("crop", "true");
+                //indicate aspect of desired crop
+                cropIntent.putExtra("aspectX", 1);
+                cropIntent.putExtra("aspectY", 1);
+                //indicate output X and Y
+                cropIntent.putExtra("outputX", 800);
+                cropIntent.putExtra("outputY", 800);
+                // retrieve data on return
+                cropIntent.putExtra("return-data", true);
+
+
+                /*File f = new File(Environment.getExternalStorageDirectory(),
+                        "/temporary_holder.jpg");
+                try {
+                    f.createNewFile();
+                } catch (IOException ex) {
+                    Log.e("io", ex.getMessage());
+                }
+
+                Uri uri = Uri.fromFile(f);
+
+                cropIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);*/
+
+                // start the activity - we handle returning in onActivityResult
+                startActivityForResult(cropIntent, PIC_CROP);
+            }
+            // respond to users whose devices do not support the crop action
+            catch (ActivityNotFoundException anfe) {
+                // display an error message
+                String errorMessage = "Whoops - your device doesn't support the crop action!";
+                Toast toast = Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT);
+                toast.show();
+            }
 
         }
 
@@ -376,6 +453,14 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
 
+    }
+
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
 
@@ -604,7 +689,7 @@ public class PhotoEditor extends AppCompatActivity {
             FileOutputStream out = null;
             try {
                 out = new FileOutputStream(getIntent().getStringExtra("filename"));
-                logbitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
+                logbitmap.compress(Bitmap.CompressFormat.JPEG, 100, out); // bmp is your Bitmap instance
                 // PNG is a lossless format, the compression factor (100) is ignored
             } catch (Exception e) {
                 e.printStackTrace();

@@ -3,6 +3,7 @@
     package="iiitd.ac.in.androidfaceproject" >
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
@@ -12,23 +13,23 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:screenOrientation="portrait"
         android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
 
         </activity>
         <activity
             android:name=".test_sample"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_test_sample" >
         </activity>
         <activity
             android:name=".YourActivity"
-            android:label="Your Activity" >
-        </activity>
-        <activity
-            android:name=".LandingPage"
-            android:label="@string/title_activity_landing_page" >
+            android:screenOrientation="portrait"
+            android:label="PhotoBucket" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,23 +37,36 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".LandingPage"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_landing_page" >
+
+        </activity>
+        <activity
             android:name=".PhotoEditor"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_photo_editor" >
         </activity>
         <activity
             android:name=".GoogleSignIn"
+            android:screenOrientation="portrait"
             android:label="@string/app_name" >
+
         </activity>
         <activity
             android:name=".CollageMainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_collage" >
         </activity>
         <activity
             android:name=".DisplayCollageActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_display_collage" >
 
         </activity>
-        <activity android:name=".CustomGalleryActivity" >
+        <activity
+            android:name=".CustomGalleryActivity"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="ACTION_PICK" />
                 <action android:name="ACTION_MULTIPLE_PICK" />
@@ -62,10 +76,12 @@
         </activity>
         <activity
             android:name=".MyApp"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_application" >
         </activity>
         <activity
             android:name=".CollageFirst"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_collage_first" >
 
         </activity>
