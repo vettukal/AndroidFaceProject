@@ -131,7 +131,7 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         mShouldResolve = false;
 
         String currentAccount = Plus.AccountApi.getAccountName(mGoogleApiClient);
-        if(currentAccount.contains("iiitd")) {
+        if(true) {
             Toast.makeText(this,"Signed in...",Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this,LandingPage.class);
             startActivity(intent);
