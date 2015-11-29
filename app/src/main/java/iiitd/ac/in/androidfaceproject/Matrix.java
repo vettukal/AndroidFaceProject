@@ -22,9 +22,9 @@ public class Matrix {
             eachWidth = width / 2;
             eachHeight = height / 2;
             grid = new Cell[2][2]; //1st column is merged
-            grid[0][0] = new Cell(0, 0, eachWidth,2*eachHeight,false, 0);
-            grid[1][0] = null;
-            grid[0][1] = new Cell(eachWidth, 0, 2*eachWidth,eachHeight,false, 1);
+            grid[0][0] = new Cell(0, 0, 2*eachWidth,eachHeight,false, 0);
+            grid[0][1] = null;
+            grid[1][0] = new Cell(0,eachHeight, eachWidth,2*eachHeight,false, 1);
             grid[1][1] = new Cell(eachWidth, eachHeight, 2*eachWidth,2*eachHeight,false, 2);
         }
         //if 4 pic layout is selected
