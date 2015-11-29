@@ -1,6 +1,9 @@
 package iiitd.ac.in.androidfaceproject;
 
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -15,6 +18,8 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -47,6 +52,8 @@ import java.util.Date;
 public class CustomGalleryActivity extends Activity {
 
     private static final String TAG = "cool CustGlryActivity";
+    public final static String APP_PATH_SD_CARD = "/photobooth/";
+    public final static String APP_THUMBNAIL_PATH_SD_CARD = "thumbnails";
 
     GridView gridGallery;
     Handler handler;
@@ -76,7 +83,7 @@ public class CustomGalleryActivity extends Activity {
     }
 
     private void initImageLoader() {
-        Log.d(TAG,"initimageloader");
+        Log.d(TAG, "initimageloader");
         try {
             String CACHE_DIR = Environment.getExternalStorageDirectory()
                     .getAbsolutePath() + "/.temp_tmp";
@@ -104,7 +111,7 @@ public class CustomGalleryActivity extends Activity {
     }
 
     private void init() {
-        Log.d(TAG,"init");
+        Log.d(TAG, "init");
         handler = new Handler();
         gridGallery = (GridView) findViewById(R.id.gridGallery);
         gridGallery.setFastScrollEnabled(true);
@@ -189,50 +196,86 @@ public class CustomGalleryActivity extends Activity {
         Log.d(TAG, "display height=" + size.y + " width=" + size.x);
 
         //allow users to sleect maximum 9 images
-        if(allPath.length>9){
-            Toast.makeText(CustomGalleryActivity.this, "Can't select more than 9 photos!", Toast.LENGTH_SHORT).show();
-            Log.d(TAG,"max 9 can be selected..error");
-        }
-        else{
+        if (allPath.length > Constants.layout_num) {
+            Toast.makeText(CustomGalleryActivity.this, "Maximum "+Constants.layout_num+" photos allowed for this template", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Maximum "+Constants.layout_num+" photos allowed for this template");
+        } else {
             try {
-                Bitmap mergedImage=createSingle();
+                Bitmap mergedImage = createSingle();
                 if (mergedImage == null)
                     Log.d(TAG, "null image");
                 else
                     Log.d(TAG, "image received..not null");
-                // display image in new activity
-
-                //Write file
+                //save image in internal storage
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
                 Date now = new Date();
-                String fileName = "/testbitmap"+formatter.format(now) + ".png";
-                File file = new File(Environment.getExternalStorageDirectory() +fileName);
-                /* //add if want to replace file, do not append date then
-                if (file.exists()) {
-                    Log.d(TAG, "file already exists at " + file + "...deleting..");
-                    file.delete();
-                } else
-                    Log.d(TAG, "file not present..so craeting new");*/
-                FileOutputStream stream = new FileOutputStream(file); //this.openFileOutput(filename, Context.MODE_PRIVATE);
+                String fileName = "testbitmap" + formatter.format(now) + ".png";
+                /* //uncomment if using internal storage
+                File file = new File(Environment.getExternalStorageDirectory() + fileName);
+                FileOutputStream stream = new FileOutputStream(file);
                 mergedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-
-                //Cleanup
                 stream.close();
                 mergedImage.recycle();
+                Toast.makeText(CustomGalleryActivity.this, "Image saved in storage", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "imaged saved in storage");
+                */
 
-                Toast.makeText(CustomGalleryActivity.this, "Image saved in gallery", Toast.LENGTH_SHORT).show();
-                Log.d(TAG,"imaged saved in SD card");
+                //save image to external storage
+                File file1=null;
+                String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + APP_PATH_SD_CARD + APP_THUMBNAIL_PATH_SD_CARD;
+                try {
+                    File dir = new File(fullPath);
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+                    FileOutputStream fOut = null;
+                    file1 = new File(fullPath, fileName);
+                    file1.createNewFile();
+                    fOut = new FileOutputStream(file1);
 
+                    // 100 means no compression, the lower you go, the stronger the compression
+                    mergedImage.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                    fOut.flush();
+                    fOut.close();
+                    MediaStore.Images.Media.insertImage(getContentResolver(), file1.getAbsolutePath(), file1.getName(), file1.getName());
+                    Toast.makeText(CustomGalleryActivity.this, "Image saved in storage", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG,"saved in storage");
+
+                } catch (Exception e) {
+                    Log.d("TAG", e.getMessage());
+                }
+
+                //create notification
+                NotificationCompat.Builder mBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.rainbow)
+                .setContentTitle("Collage created and saved in device!")
+                .setContentText("Click to open the collage!");
+                Intent resultIntent = new Intent(this, DisplayCollageActivity.class);
+                resultIntent.putExtra("mergedImage",file1.toString());
+                TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+                stackBuilder.addParentStack(DisplayCollageActivity.class);
+                // Adds the Intent that starts the Activity to the top of the stack
+                stackBuilder.addNextIntent(resultIntent);
+                PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,PendingIntent.FLAG_UPDATE_CURRENT);
+                mBuilder.setContentIntent(resultPendingIntent);
+                NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                // notificationID allows you to update the notification later on.
+                mNotificationManager.notify(1789, mBuilder.build());
+                
                 //Pop intent to display and share collage
-                            Bundle b=new Bundle();
-                            b.putString("mergedImage",file.toString());
-                            Intent intent=new Intent(this,DisplayCollageActivity.class);
-                            intent.putExtras(b);
-                            startActivity(intent);
-            } catch (FileNotFoundException e) {
+                Bundle b = new Bundle();
+                b.putString("mergedImage", file1.toString());
+                Intent intent = new Intent(this, DisplayCollageActivity.class);
+                intent.putExtras(b);
+                startActivity(intent);
+
+            } /*catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }*/
+            catch(Exception e){
+                Log.e(TAG," exception my god!");
             }
         }
     }
@@ -255,51 +298,52 @@ public class CustomGalleryActivity extends Activity {
         }
     };
 
-    private Bitmap createSingle()
-    {
-        Log.d(TAG,"create sigle method");
-        Bitmap bmp = Bitmap.createBitmap(size.x,size.y, Bitmap.Config.RGB_565);
-        Log.d(TAG,"width="+size.x+" height="+size.y);
+
+
+    private Bitmap createSingle() {
+        Log.d(TAG, "create sigle method");
+        Bitmap bmp = Bitmap.createBitmap(size.x, size.y, Bitmap.Config.RGB_565);
+        Log.d(TAG, "width=" + size.x + " height=" + size.y);
         Canvas canvas = new Canvas(bmp);
         canvas.drawColor(Color.GRAY);
-        Matrix m=new Matrix(size.x,size.y);
+        Matrix m = new Matrix(size.x, size.y);
         Bitmap b;
         Cell cell;
         BitmapFactory.Options options = new BitmapFactory.Options();
         //options.inPreferredConfig = Bitmap.Config.RGB_565;
         //options.inJustDecodeBounds=true;//options.inPurgeable=true;
         //options.inInputShareable=true;
-        Log.d(TAG,"options height="+options.outHeight+" width="+options.outWidth+" mimetype="+options.outMimeType);
+        Log.d(TAG, "options height=" + options.outHeight + " width=" + options.outWidth + " mimetype=" + options.outMimeType);
         //int inSampleSize=1;
 
         try {
-            Log.d(TAG,"allpath length "+allPath.length);
+
             for (int i = 0; i < allPath.length; i++) {
-                Log.d(TAG,"i="+i);
+                Log.d(TAG, "i=" + i);
                 options.inJustDecodeBounds = true;
-                InputStream fs=new FileInputStream(new File(allPath[i]));
+                InputStream fs = new FileInputStream(new File(allPath[i]));
                 BitmapFactory.decodeStream(fs, null, options);
                 fs.close();
                 cell = m.getCell(i);
-                int scale=1;
-                int REQUIRED_HEIGHT=cell.getBottom()-cell.getTop();
-                int REQUIRED_WIDTH=cell.getRight()-cell.getLeft();
-                while(options.outWidth/scale/2>=REQUIRED_WIDTH && options.outHeight/scale/2>=REQUIRED_HEIGHT)
-                    scale*=2;
+                int scale = 1;
+                int REQUIRED_HEIGHT = cell.getBottom() - cell.getTop();
+                int REQUIRED_WIDTH = cell.getRight() - cell.getLeft();
+                while (options.outWidth / scale / 2 >= REQUIRED_WIDTH && options.outHeight / scale / 2 >= REQUIRED_HEIGHT)
+                    scale *= 2;
                 BitmapFactory.Options o2 = new BitmapFactory.Options();
                 //fs.close();
-                fs=new FileInputStream(new File(allPath[i]));
-                o2.inSampleSize=scale;
-                options.inJustDecodeBounds=false;
+                fs = new FileInputStream(new File(allPath[i]));
+                o2.inSampleSize = scale;
+                options.inJustDecodeBounds = false;
                 //sometimes outofmemory
-                b=BitmapFactory.decodeStream(fs, null, o2);
+                b = BitmapFactory.decodeStream(fs, null, o2);
                 //Log.d(TAG,"b height="+b.getHeight()+" b width="+b.getWidth());
                 /*if(b==null)
                     Log.d(TAG," bmp null ");
                 else
                     Log.d(TAG," not null bmp ");*/
 
-                b = Bitmap.createScaledBitmap(b,cell.getRight()-cell.getLeft() ,cell.getBottom()-cell.getTop(), true);
+                b = Bitmap.createScaledBitmap(b, cell.getRight() - cell.getLeft(), cell.getBottom() - cell.getTop(), true);
                 //Log.d(TAG,"i="+i+" top=" + cell.getTop() + " left=" + cell.getLeft());
                 canvas.save();
                 //canvas.rotate(10);
@@ -309,15 +353,11 @@ public class CustomGalleryActivity extends Activity {
                 //canvas.restore();
             }
             return bmp;
-        }
-        catch(FileNotFoundException e)
-        {
-            Log.d(TAG,e.toString());
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, e.toString());
             //System.gc();
             //b=null;
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         //b=null;
@@ -342,7 +382,7 @@ public class CustomGalleryActivity extends Activity {
             startActivity(intent.createChooser(intent, "Share using"));
 
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(this,"No client available for sharing", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No client available for sharing", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "Oops no client available for sharing!");
         }
     }
@@ -351,7 +391,7 @@ public class CustomGalleryActivity extends Activity {
 
         @Override
         public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-            Log.d(TAG,"adapterview mitemmulticlk listener");
+            Log.d(TAG, "adapterview mitemmulticlk listener");
             adapter.changeSelection(v, position);
 
         }
@@ -369,7 +409,7 @@ public class CustomGalleryActivity extends Activity {
     };
 
     private ArrayList<CustomGallery> getGalleryPhotos() {
-        Log.d(TAG,"getgalleryphotos");
+        Log.d(TAG, "getgalleryphotos");
         ArrayList<CustomGallery> galleryList = new ArrayList<CustomGallery>();
 
         try {
