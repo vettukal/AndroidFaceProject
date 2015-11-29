@@ -40,8 +40,6 @@ dependencies {
     compile 'com.android.support:design:23.0.1'
     compile project(':openCVLibrary300')
 
-    compile 'com.android.support:design:22.2.0'
-    compile 'com.facebook.android:facebook-android-sdk:4.6.0'
 }
 
 repositories {
