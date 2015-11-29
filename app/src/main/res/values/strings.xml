@@ -66,5 +66,9 @@
     <string name="title_activity_collage_first">CollageFirst</string>
     <string name="saveButton">Save</string>
     <string name="undoButton">Undo</string>
+    <string name="title_activity_notification_view">NotificationView</string>
+    <string name="title_activity_fblogin">fblogin</string>
+    <string name="facebook_app_id">1655217564755303</string>
+
 </resources>
 
