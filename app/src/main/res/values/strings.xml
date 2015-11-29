@@ -59,7 +59,7 @@
     <string name="effect_filt_4">Unicolor</string>
     <string name="effect_filt_5">Inverse</string>
     <string name="brightness_hint">Move Slider to adjust brightness</string>
-    <string name="brightness_dialog_title">Ajust Brightness</string>
+    <string name="brightness_dialog_title">Adjust Brightness</string>
     <string name="contrast_hint">Move slider to adjust contrast</string>
     <string name="contrast_dialog_title">Adjust Contrast</string>
     <string name="color_hint">Move sliders to adjust color (RGB) values</string>
@@ -69,6 +69,7 @@
     <string name="title_activity_notification_view">NotificationView</string>
     <string name="title_activity_fblogin">fblogin</string>
     <string name="facebook_app_id">1655217564755303</string>
+    <string name="color_dialog_title">Adjust Color</string>
 
 </resources>
 
