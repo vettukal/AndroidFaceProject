@@ -2,6 +2,7 @@ package iiitd.ac.in.androidfaceproject;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -49,6 +50,15 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in);
+
+        SharedPreferences settings = getPreferences(0);
+        SharedPreferences.Editor editor = settings.edit();
+        if(settings.contains("email")){
+            if(!settings.getString("email","none").equalsIgnoreCase("none")){
+                callLanding();
+            }
+        }
+
 
 
         app = (MyApp)getApplication();
@@ -133,11 +143,10 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         String currentAccount = Plus.AccountApi.getAccountName(mGoogleApiClient);
         if(true) {
             Toast.makeText(this,"Signed in...",Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this,LandingPage.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
+            SharedPreferences settings = getPreferences(0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("email",currentAccount);
+            callLanding();
         }
         else {
             if (mGoogleApiClient.isConnected()) {
@@ -198,5 +207,13 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
             Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
             mGoogleApiClient.disconnect();
         }
+    }
+
+    private void callLanding(){
+        Intent intent = new Intent(this,LandingPage.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
     }
 }

@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -736,6 +737,16 @@ public class PhotoEditor extends AppCompatActivity {
 
         }
 
+        else if (tag.equals("Logout")) {
+            SharedPreferences settings = getPreferences(0);
+            SharedPreferences.Editor editor = settings.edit();
+            if(settings.contains("email")){
+                editor.putString("email","none");
+            }
+
+            callSignIn();
+        }
+
         else if (tag.equals("AgeGender")) {
             Log.d("vince", " Going to detect the age and gender");
             Toast.makeText(this,"Detecting faces...", Toast.LENGTH_LONG).show();
@@ -981,5 +992,13 @@ public class PhotoEditor extends AppCompatActivity {
 
     interface DetectCallback {
         void detectResult(JSONObject rst);
+    }
+
+    private void callSignIn(){
+        Intent intent = new Intent(this,GoogleSignIn.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
     }
 }
