@@ -157,9 +157,7 @@ public class CustomGalleryActivity extends Activity {
                     }
                 });
                 Looper.loop();
-            }
-
-            ;
+            };
 
         }.start();
 
