@@ -739,6 +739,8 @@ public class PhotoEditor extends AppCompatActivity {
         else if (tag.equals("AgeGender")) {
             Log.d("vince", " Going to detect the age and gender");
             Toast.makeText(this,"Detecting faces...", Toast.LENGTH_LONG).show();
+            detectionProgressDialog.show();
+            detectionProgressDialog.setMessage("Detecting Faces in Pic");
             //Frame(logbitmap);
             FaceppDetect faceppDetect = new FaceppDetect();
             faceppDetect.setDetectCallback(new DetectCallback() {
@@ -747,6 +749,7 @@ public class PhotoEditor extends AppCompatActivity {
                     //Log.v(TAG, rst.toString());
 
                     Log.v("My result", rst.toString());
+                    detectionProgressDialog.dismiss();
 
                     try {
                         //find out all faces

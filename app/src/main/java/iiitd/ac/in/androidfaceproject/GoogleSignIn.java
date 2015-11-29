@@ -134,6 +134,9 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         if(true) {
             Toast.makeText(this,"Signed in...",Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this,LandingPage.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
         }
         else {
