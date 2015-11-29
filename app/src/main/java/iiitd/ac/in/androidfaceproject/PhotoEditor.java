@@ -738,10 +738,12 @@ public class PhotoEditor extends AppCompatActivity {
         }
 
         else if (tag.equals("Logout")) {
-            SharedPreferences settings = getPreferences(0);
+            SharedPreferences settings = getSharedPreferences("mysettings",0);
             SharedPreferences.Editor editor = settings.edit();
+            Log.d("vince","PhotoEditor fetch: "+settings.getString("email","none"));
             if(settings.contains("email")){
                 editor.putString("email","none");
+                editor.commit();
             }
 
             callSignIn();

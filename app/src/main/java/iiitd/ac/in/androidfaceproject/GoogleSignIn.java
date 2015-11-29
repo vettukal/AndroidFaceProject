@@ -51,9 +51,11 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_google_sign_in);
 
-        SharedPreferences settings = getPreferences(0);
+        SharedPreferences settings = getSharedPreferences("mysettings",0);
         SharedPreferences.Editor editor = settings.edit();
+        Log.d("vince","Google SignIn fetch: "+settings.getString("email","none"));
         if(settings.contains("email")){
+            Log.d("vince SignIn","email field is present");
             if(!settings.getString("email","none").equalsIgnoreCase("none")){
                 callLanding();
             }
@@ -143,9 +145,11 @@ public class GoogleSignIn extends AppCompatActivity implements GoogleApiClient.C
         String currentAccount = Plus.AccountApi.getAccountName(mGoogleApiClient);
         if(true) {
             Toast.makeText(this,"Signed in...",Toast.LENGTH_LONG).show();
-            SharedPreferences settings = getPreferences(0);
+            SharedPreferences settings = getSharedPreferences("mysettings",0);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("email",currentAccount);
+            Log.d("vince","SignIN put: "+currentAccount);
+            editor.commit();
             callLanding();
         }
         else {
