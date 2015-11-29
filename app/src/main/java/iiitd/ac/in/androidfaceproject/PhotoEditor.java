@@ -94,7 +94,7 @@ public class PhotoEditor extends AppCompatActivity {
     // Detect faces by uploading face images
 // Frame faces after detection
 
-    private static Bitmap drawFaceRectanglesOnBitmap(Bitmap originalBitmap, Face[] faces) {
+    private Bitmap drawFaceRectanglesOnBitmap(Bitmap originalBitmap, Face[] faces) {
         Bitmap bitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(bitmap);
         Paint paint = new Paint();
@@ -141,6 +141,9 @@ public class PhotoEditor extends AppCompatActivity {
                 }
 
             }
+        }
+        else {
+            Toast.makeText(this,"Faces Not Found...", Toast.LENGTH_LONG).show();
         }
 
         return bitmap;
@@ -735,6 +738,7 @@ public class PhotoEditor extends AppCompatActivity {
 
         else if (tag.equals("AgeGender")) {
             Log.d("vince", " Going to detect the age and gender");
+            Toast.makeText(this,"Detecting faces...", Toast.LENGTH_LONG).show();
             //Frame(logbitmap);
             FaceppDetect faceppDetect = new FaceppDetect();
             faceppDetect.setDetectCallback(new DetectCallback() {
@@ -747,6 +751,7 @@ public class PhotoEditor extends AppCompatActivity {
                     try {
                         //find out all faces
                         final int count = rst.getJSONArray("face").length();
+
                         final Face[] faces = new Face[count];
                         for (int i = 0; i < count; ++i) {
                             faces[i] = new Face();
