@@ -98,18 +98,12 @@ public class DisplayCollageActivity extends Activity {
         //intent.setData(Uri.parse("mailto:"));
         intent.setType("image/png");
         Log.d(TAG,"in share method filepath="+filepath);
-        //ArrayList<Uri> files = new ArrayList<Uri>();
 
-
-        //for (String path : filePaths) {
-            //Uri uri = Uri.fromFile(new File(filepath));
-            //files.add(uri);
-        //}
         if (filepath != null) {
-            Log.d(TAG,"reached not null filepath section");
+            //Log.d(TAG,"reached not null filepath section");
             Uri uri=Uri.fromFile(new File(filepath));
             intent.putExtra(Intent.EXTRA_STREAM, uri);
-            
+
             try {
                 startActivity(intent.createChooser(intent, "share using"));
 

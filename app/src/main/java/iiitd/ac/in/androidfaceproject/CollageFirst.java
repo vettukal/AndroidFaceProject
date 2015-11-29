@@ -9,16 +9,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CollageFirst extends AppCompatActivity {
+public class CollageFirst extends AppCompatActivity { //implements NavigationDrawerFragment.NavigationDrawerCallbacks{
     private final String TAG = "cool collagefirst";
     TextView tvSelect;
-    //private int layout_num;
+    ImageView iv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_collage_first);
         tvSelect=(TextView)findViewById(R.id.tvSelect);
+        //Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        //setSupportActionBar(myToolbar);
+
     }
 
     @Override
@@ -49,6 +52,9 @@ public class CollageFirst extends AppCompatActivity {
         templateImg.setImageResource(R.drawable.three);
         Constants.layout_num=3;
         tvSelect.setVisibility(v.INVISIBLE);
+        iv=(ImageView)findViewById(R.id.chooseLayoutImageView);
+        iv.setClickable(true);
+        handleImageClick(v);
     }
 
     public void onClickCollage4Btn(View v) {
@@ -56,6 +62,9 @@ public class CollageFirst extends AppCompatActivity {
         templateImg.setImageResource(R.drawable.four);
         Constants.layout_num=4;
         tvSelect.setVisibility(v.INVISIBLE);
+        iv=(ImageView)findViewById(R.id.chooseLayoutImageView);
+        iv.setClickable(true);
+        handleImageClick(v);
     }
 
     public void onClickCollage9Btn(View v)
@@ -64,6 +73,9 @@ public class CollageFirst extends AppCompatActivity {
         templateImg.setImageResource(R.drawable.nine);
         Constants.layout_num=9;
         tvSelect.setVisibility(v.INVISIBLE);
+        iv=(ImageView)findViewById(R.id.chooseLayoutImageView);
+        iv.setClickable(true);
+        handleImageClick(v);
     }
 
     public void handleImageClick(View v){
@@ -72,5 +84,12 @@ public class CollageFirst extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    /*
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, NavForLogoutActivity.PlaceholderFragment.newInstance(position + 1))
+                .commit();
+    }*/
 }
